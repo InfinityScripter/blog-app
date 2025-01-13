@@ -6,15 +6,17 @@ import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
     // Ответ всегда должен быть один
     try {
-        // Проверяем валидацию данных с помощью express-validator и express
-        const errors = validationResult(req)
-
+        // Добавляем проверку результатов валидации
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
-                errors: errors.array(),
-                message: 'Некорректные данные при регистрации'
-            })
+                success: false,
+                errors: errors.array()
+            });
         }
+
+        // Проверяем валидацию данных с помощью express-validator и express
+
         // Храним пароль в зашифрованном виде
         const password = req.body.password
         const hash = bcrypt.hashSync(password, 10)
@@ -53,6 +55,15 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+        // Добавляем проверку результатов валидации
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
+        }
+
         const user = await User.findOne({email: req.body.email})
         if (!user) {
             return res.status(404).json({

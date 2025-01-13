@@ -5,6 +5,7 @@ import checkAuth from "./utils/check_auth.js"
 import * as userController from "./controllers/user_controller.js";
 import * as postController from "./controllers/post_controller.js";
 import multer from "multer";
+import handle_errors from "./utils/handle_errors.js";
 
 mongoose.connect(
     'mongodb+srv://Mikhail:Sa54CsaA6Sk1QDJL@cluster1.hwqs0am.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster1'
@@ -34,9 +35,9 @@ app.use('/uploads', express.static('uploads'))
 // Подключаем express к нашему приложению
 app.use(express.json()); // for parsing application/json, подключаем что бы принимать json
 
-app.post('/auth/login', loginValidation, userController.login)
+app.post('/auth/login', loginValidation, handle_errors, userController.login)
 
-app.post('/auth/register', registerValidation, userController.register)
+app.post('/auth/register', registerValidation, handle_errors, userController.register)
 
 app.get('/auth/me', checkAuth, userController.getMe)
 
