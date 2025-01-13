@@ -42,11 +42,11 @@ app.post('/auth/register', registerValidation, handle_errors, userController.reg
 app.get('/auth/me', checkAuth, userController.getMe)
 
 // Выполняем действия с постами нужно проверить авторизацию, перед созданием
-app.post('/posts', checkAuth, postCreateValidation, checkAuth, postController.create)
+app.post('/posts', checkAuth, postCreateValidation,handle_errors, checkAuth, postController.create)
 app.get('/posts', postController.getAll)
 app.get('/posts/:id', postController.getOne)
 app.delete('/posts/:id', checkAuth, postController.remove)
-app.patch('/posts/:id', checkAuth, postController.update)
+app.patch('/posts/:id', checkAuth,postCreateValidation,handle_errors, postController.update)
 
 // Выполняем сохраниение файлов через multer в папку uploads .
 
