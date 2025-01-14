@@ -6,6 +6,7 @@ import * as userController from "./controllers/user_controller.js";
 import * as postController from "./controllers/post_controller.js";
 import multer from "multer";
 import handle_errors from "./utils/handle_errors.js";
+import cors from "cors";
 
 mongoose.connect(
     'mongodb+srv://Mikhail:Sa54CsaA6Sk1QDJL@cluster1.hwqs0am.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster1'
@@ -30,10 +31,11 @@ const storage = multer.diskStorage({
 // Подключаем multer
 const upload = multer({storage})
 
+app.use(express.json()); // for parsing application/json, подключаем что бы принимать json
+app.use(cors()); // подключаем cors чтобы можно было отправлять запросы с других доменов
 // Нужно express дать знать, что есть папка uploads в кторой хранится файлы
 app.use('/uploads', express.static('uploads'))
 // Подключаем express к нашему приложению
-app.use(express.json()); // for parsing application/json, подключаем что бы принимать json
 
 app.post('/auth/login', loginValidation, handle_errors, userController.login)
 
@@ -47,6 +49,8 @@ app.get('/posts', postController.getAll)
 app.get('/posts/:id', postController.getOne)
 app.delete('/posts/:id', checkAuth, postController.remove)
 app.patch('/posts/:id', checkAuth,postCreateValidation,handle_errors, postController.update)
+
+app.get('/tags', postController.getLastTags)
 
 // Выполняем сохраниение файлов через multer в папку uploads .
 

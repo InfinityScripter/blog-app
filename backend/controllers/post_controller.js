@@ -116,3 +116,19 @@ export const update = async (req, res) => {
         })
     }
 }
+
+
+export const getLastTags = async (req, res) => {
+    try {
+        // Получаем последние 5 постов
+        const posts = await PostModel.find().limit(5).exec();
+        // Получаем все теги
+        const tags = [...new Set(posts.map(obj => obj.tags).flat())].slice(0, 5);
+        res.json(tags);
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: 'Не удалось получить теги',
+        })
+    }
+}
