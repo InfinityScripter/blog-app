@@ -1,0 +1,22 @@
+import {createSlice} from "@reduxjs/toolkit";
+
+
+// создаем начальное состояние слайса для постов
+const initialState = {
+    posts: {
+        items: [],
+        status: 'loading'
+    },
+    tags: {
+        items: [],
+        status: 'loading'
+    }
+}
+
+const postsSlice = createSlice({
+    name: 'posts',
+    initialState,
+    reducers: {}
+})
+
+export const postsReducer = postsSlice.reducer
