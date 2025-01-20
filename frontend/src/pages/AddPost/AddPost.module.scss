@@ -12,8 +12,17 @@
   }
 }
 
+
+.container {
+  display: flex;
+  align-items: flex-start;
+}
+
 .image {
-  width: 100%;
+  margin: 15px 0;
+  max-height: 200px;
+  object-fit: contain;
+
 }
 
 .tags {
