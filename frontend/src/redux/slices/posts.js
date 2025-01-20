@@ -21,6 +21,14 @@ export const fetchTags = createAsyncThunk(
     }
 )
 
+export const fetchRemovePost = createAsyncThunk(
+    'posts/fetchRemovePost',
+    async (id) => {
+        const {data} = await axios.delete(`/posts/${id}`)
+        return data
+    }
+)
+
 // создаем начальное состояние слайса для постов
 const initialState = {
     posts: {
@@ -62,6 +70,16 @@ const postsSlice = createSlice({
             state.tags.items = []
             state.tags.status = 'error'
         },
+        [fetchRemovePost.pending]: (state) => {
+            state.posts.status = 'loading'
+        },
+        [fetchRemovePost.fulfilled]: (state,action) => {
+            state.posts.items = state.posts.items.filter(obj => obj._id !== action.meta.arg)
+            state.posts.status = 'loaded'
+        },
+        [fetchRemovePost.rejected]: (state) => {
+            state.posts.status = 'error'
+        }
 
     }
 })
