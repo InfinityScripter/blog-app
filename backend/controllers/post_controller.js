@@ -26,6 +26,13 @@ export const getOne = async (req, res) => {
             { $inc: { viewsCount: 1 } },
             // Возвращаем обновленный документ
             { returnDocument: "after", }
+        ).populate(
+            {
+                path: 'user',
+                // подгружаем только поля name и avatarUrl
+                select: ['name', 'avatarUrl'],
+
+            }
         )
             // Получаем обновленный документ
             .then(doc => {
@@ -74,21 +81,24 @@ export const create = async (req, res) => {
             imageUrl: req.body.imageUrl,
             tags: req.body.tags,
             user: req.user,
-        })
-//         Когда документ подготовлен, сохраняем его
-        const post = await doc.save()
-        res.json(post)
+        });
+
+        // Сохраняем документ
+        const post = await doc.save();
+
+        // Отправляем ответ с кодом 201 и данными созданного поста
         res.status(201).json({
             message: 'Пост успешно создан',
-            success: true
-        })
+            success: true,
+            post,
+        });
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).json({
             message: 'Не удалось создать пост',
-        })
+        });
     }
-}
+};
 
 export const update = async (req, res) => {
     try {
