@@ -11,6 +11,7 @@ import {selectIsAuth} from "../../redux/slices/auth";
 import {Navigate, useNavigate} from "react-router-dom";
 import axios from "../../axios";
 import {Card} from "@mui/material";
+import Cookies from "js-cookie";
 
 export const AddPost = () => {
     const navigate = useNavigate();
@@ -78,7 +79,7 @@ export const AddPost = () => {
         [],
     );
 
-    if (!window.localStorage.getItem('token') && !isAuth) {
+    if (!Cookies.get('token') && !isAuth) {
         return (
             <Navigate to='/login'/>
         )

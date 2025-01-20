@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import {useForm} from "react-hook-form";
+import Cookies from 'js-cookie';
 
 import styles from "./Login.module.scss";
 import {useDispatch, useSelector} from "react-redux";
@@ -36,7 +37,7 @@ export const Login = () => {
         const data = await dispatch(fetchAuth(values))
         console.log(data)
         if ('token' in data.payload) {
-            window.localStorage.setItem('token', data.payload.token)
+            Cookies.set('token', data.payload.token)
         }
     }
 
