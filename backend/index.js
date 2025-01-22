@@ -30,7 +30,7 @@ const app = express();
 
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
-const upload = multer({ 
+const upload = multer({
     storage,
     limits: {
         fileSize: 5 * 1024 * 1024 // 5MB limit
@@ -50,7 +50,9 @@ app.use(cors({
         'http://localhost:3000',
         'https://blog-app-front-gamma.vercel.app',
         'https://sh0ny.online',
-        'http://sh0ny.online'
+        'http://sh0ny.online',
+        'https://blog-ikcjfjuky-sh0nyits-projects.vercel.app',
+        'https://blog-app-front-byyk5it0d-sh0nyits-projects.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
@@ -89,7 +91,7 @@ app.post('/upload', checkAuth, upload.single('image'), async (req, res) => {
         }
 
         const filename = `${Date.now()}-${req.file.originalname}`;
-        
+
         // Create a readable stream from buffer
         const readableStream = new Readable();
         readableStream.push(req.file.buffer);
@@ -145,7 +147,7 @@ app.post('/upload', checkAuth, upload.single('image'), async (req, res) => {
 app.get('/uploads/:filename', async (req, res) => {
     try {
         const files = await bucket.find({ filename: req.params.filename }).toArray();
-        
+
         if (!files || files.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -157,7 +159,7 @@ app.get('/uploads/:filename', async (req, res) => {
         res.set('Content-Type', file.metadata.mimetype);
 
         const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
-        
+
         downloadStream.on('error', (error) => {
             console.error('Download Stream Error:', error);
             return res.status(500).json({
