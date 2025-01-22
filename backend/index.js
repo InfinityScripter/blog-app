@@ -45,14 +45,11 @@ const upload = multer({
 });
 
 app.use(express.json());
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-    credentials: false
-}));
 
-app.options('*', cors());
+
+app.use(cors());
+
+
 
 app.post('/auth/login', loginValidation, handle_errors, userController.login)
 
