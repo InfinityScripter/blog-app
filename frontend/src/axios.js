@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 
 const instance = axios.create({
-    baseURL: 'http://localhost:4444'
+    baseURL: process.env.REACT_APP_API_URL
 })
 
 // добавляем заголовок с токеном в каждый запрос если пользователь авторизован,
