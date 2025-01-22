@@ -39,7 +39,7 @@ const upload = multer({storage})
 
 app.use(express.json()); // for parsing application/json, подключаем что бы принимать json
 app.use(cors({
-    origin: '*', // Разрешить запросы с любых доменов
+    origin: ['http://sh0ny.online', 'https://sh0ny.online', 'http://localhost:3000'], // Разрешить запросы с любых доменов
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Разрешить все стандартные HTTP-методы
     allowedHeaders: 'Content-Type,Authorization' // Разрешить заголовки Content-Type и Authorization
 })); // подключаем cors чтобы можно было отправлять запросы с других доменов
