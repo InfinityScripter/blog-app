@@ -28,24 +28,14 @@ mongoose.connect(process.env.MONGO_DB_URI)
 
 const app = express();
 
-// Configure multer for memory storage
-const storage = multer.memoryStorage();
-const upload = multer({
-    storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
-    },
-    fileFilter: (req, file, cb) => {
-        // Accept images only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            return cb(new Error('Only image files are allowed!'), false);
-        }
-        cb(null, true);
-    }
-});
 
-app.use(express.json());
-
+// Configure CORS
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://sh0ny.online',
+    'https://blog-app-front-byyk5it0d-sh0nyits-projects.vercel.app',
+    'https://blog-ikcjfjuky-sh0nyits-projects.vercel.app'
+];
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -69,6 +59,25 @@ app.options('*', (req, res) => {
     res.sendStatus(200);
 });
 
+
+
+// Configure multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        // Accept images only
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
+
+app.use(express.json());
 
 
 app.post('/auth/login', loginValidation, handle_errors, userController.login)
