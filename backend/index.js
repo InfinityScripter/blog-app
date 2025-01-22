@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import fs from "fs";
 import dotenv from 'dotenv';
 import {loginValidation, postCreateValidation, registerValidation} from "./validations/validation.js";
 import checkAuth from "./utils/check_auth.js"
@@ -24,6 +25,9 @@ const app = express();
 // Создаем папку для загрузки файлов (хранилище) через multer
 const storage = multer.diskStorage({
     destination: (_, __, cb) => {
+        if (fs.existsSync('uploads')) {
+            fs.mkdirSync('uploads')
+        }
         cb(null, 'uploads')
     },
     filename: (_, file, cb) => {
