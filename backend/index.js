@@ -46,18 +46,10 @@ const upload = multer({
 
 app.use(express.json());
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://blog-app-front-gamma.vercel.app',
-        'https://sh0ny.online',
-        'http://sh0ny.online',
-        'https://blog-ikcjfjuky-sh0nyits-projects.vercel.app',
-        'https://blog-app-front-byyk5it0d-sh0nyits-projects.vercel.app'
-    ],
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-    credentials: true,
-    optionsSuccessStatus: 200
+    credentials: false
 }));
 
 app.options('*', cors());
