@@ -29,35 +29,14 @@ mongoose.connect(process.env.MONGO_DB_URI)
 const app = express();
 
 
-// Configure CORS
-const allowedOrigins = [
-    'http://localhost:3000',
-    'https://sh0ny.online',
-    'https://blog-app-front-byyk5it0d-sh0nyits-projects.vercel.app',
-    'https://blog-ikcjfjuky-sh0nyits-projects.vercel.app'
-];
-
 app.use(cors({
-    origin: (origin, callback) => {
-        // Разрешаем запросы от определенных доменов
-        if (!origin || allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-        callback(new Error('Not allowed by CORS'));
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Разрешаем отправку cookies
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+    credentials: false
 }));
 
-// Обработка preflight-запросов (OPTIONS)
-app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.sendStatus(200);
-});
+app.options('*', cors());
 
 
 
