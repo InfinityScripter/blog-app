@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 import {loginValidation, postCreateValidation, registerValidation} from "./validations/validation.js";
 import checkAuth from "./utils/check_auth.js"
 import * as userController from "./controllers/user_controller.js";
@@ -7,11 +8,12 @@ import * as postController from "./controllers/post_controller.js";
 import multer from "multer";
 import handle_errors from "./utils/handle_errors.js";
 import cors from "cors";
+dotenv.config();
 
 mongoose.connect(
-    'mongodb+srv://Mikhail:Sa54CsaA6Sk1QDJL@cluster1.hwqs0am.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster1'
+    process.env.MONGO_DB_URI
 ).then(() => {
-    // Подключаем mongodb к нашему приложению через mongoose
+    // Подключаем mongodb к нашему  приложению через mongoose
     console.log('DB OK')
 }).catch((err) => {
     console.log('DB error', err)
@@ -59,7 +61,7 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
         url: `/uploads/${req.file.originalname}`
     })
 })
-app.listen(4444, (err) => {
+app.listen(process.env.PORT ||4444, (err) => {
     if (err) throw err
     console.log('Example OK, app listening on port 4444!')
 })
