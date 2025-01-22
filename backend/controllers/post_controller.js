@@ -75,11 +75,21 @@ export const remove = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
+        // Log the entire request body and file for debugging
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+
+        // Check if an image was uploaded
+        let imageUrl = req.body.imageUrl || '';
+        if (req.file) {
+            imageUrl = `/uploads/${req.file.filename}`;
+        }
+
         const doc = new PostModel({
             title: req.body.title,
             text: req.body.text,
-            imageUrl: req.body.imageUrl,
-            tags: req.body.tags,
+            imageUrl: imageUrl,
+            tags: Array.isArray(req.body.tags) ? req.body.tags : req.body.tags.split(','),
             user: req.user,
         });
 
@@ -90,12 +100,16 @@ export const create = async (req, res) => {
         res.status(201).json({
             message: 'Пост успешно создан',
             success: true,
-            post,
+            post: {
+                ...post.toObject(),
+                imageUrl: imageUrl // Ensure imageUrl is returned
+            },
         });
     } catch (err) {
-        console.log(err);
+        console.error('Post creation error:', err);
         res.status(500).json({
             message: 'Не удалось создать пост',
+            error: err.message
         });
     }
 };

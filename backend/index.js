@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import fs from "fs";
 import dotenv from 'dotenv';
 import {loginValidation, postCreateValidation, registerValidation} from "./validations/validation.js";
 import checkAuth from "./utils/check_auth.js"
@@ -9,43 +8,48 @@ import * as postController from "./controllers/post_controller.js";
 import multer from "multer";
 import handle_errors from "./utils/handle_errors.js";
 import cors from "cors";
+import { GridFSBucket } from 'mongodb';
+import { Readable } from 'stream';
+
 dotenv.config();
 
-mongoose.connect(
-    process.env.MONGO_DB_URI
-).then(() => {
-    // Подключаем mongodb к нашему  приложению через mongoose
-    console.log('DB OK')
-}).catch((err) => {
-    console.log('DB error', err)
-})
+// Initialize GridFS bucket
+let bucket;
+mongoose.connect(process.env.MONGO_DB_URI)
+    .then(() => {
+        console.log('DB OK');
+        bucket = new GridFSBucket(mongoose.connection.db, {
+            bucketName: 'uploads'
+        });
+    })
+    .catch((err) => {
+        console.log('DB error', err);
+    });
 
-// Создаем app через express и подключаем mongoose
 const app = express();
-// Создаем папку для загрузки файлов (хранилище) через multer
-const storage = multer.diskStorage({
-    destination: (_, __, cb) => {
-        if (!fs.existsSync('uploads')) {
-            fs.mkdirSync('uploads')
-        }
-        cb(null, 'uploads')
-    },
-    filename: (_, file, cb) => {
-        cb(null, file.originalname)
-    }
-})
-// Подключаем multer
-const upload = multer({storage})
 
-app.use(express.json()); // for parsing application/json, подключаем что бы принимать json
+// Configure multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        // Accept images only
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
+
+app.use(express.json());
 app.use(cors({
-    origin: ['http://sh0ny.online', 'https://sh0ny.online', 'http://localhost:3000'], // Разрешить запросы с любых доменов
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Разрешить все стандартные HTTP-методы
-    allowedHeaders: 'Content-Type,Authorization' // Разрешить заголовки Content-Type и Authorization
-})); // подключаем cors чтобы можно было отправлять запросы с других доменов
-// Нужно express дать знать, что есть папка uploads в кторой хранится файлы
-app.use('/uploads', express.static('uploads'))
-// Подключаем express к нашему приложению
+    origin: ['http://sh0ny.online', 'https://sh0ny.online', 'http://localhost:3000'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
 
 app.post('/auth/login', loginValidation, handle_errors, userController.login)
 
@@ -65,13 +69,107 @@ app.patch('/posts/:id', checkAuth,postCreateValidation,handle_errors, postContro
 
 app.get('/tags', postController.getLastTags)
 
-// Выполняем сохраниение файлов через multer в папку uploads .
+// Upload endpoint
+app.post('/upload', checkAuth, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        }
 
-app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
-    res.json({
-        url: `/uploads/${req.file.originalname}`
-    })
-})
+        const filename = `${Date.now()}-${req.file.originalname}`;
+        
+        // Create a readable stream from buffer
+        const readableStream = new Readable();
+        readableStream.push(req.file.buffer);
+        readableStream.push(null);
+
+        // Create upload stream
+        const uploadStream = bucket.openUploadStream(filename, {
+            contentType: req.file.mimetype,
+            metadata: {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            }
+        });
+
+        // Handle upload errors
+        uploadStream.on('error', (error) => {
+            console.error('Upload Stream Error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error uploading file',
+                error: error.message
+            });
+        });
+
+        // Handle upload success
+        uploadStream.on('finish', (file) => {
+            return res.status(200).json({
+                success: true,
+                message: 'File uploaded successfully',
+                file: {
+                    url: `/uploads/${filename}`,
+                    filename: filename,
+                    originalname: req.file.originalname
+                }
+            });
+        });
+
+        // Pipe the readable stream to the upload stream
+        readableStream.pipe(uploadStream);
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error uploading file',
+            error: error.message
+        });
+    }
+});
+
+// Serve files endpoint
+app.get('/uploads/:filename', async (req, res) => {
+    try {
+        const files = await bucket.find({ filename: req.params.filename }).toArray();
+        
+        if (!files || files.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'File not found'
+            });
+        }
+
+        const file = files[0];
+        res.set('Content-Type', file.metadata.mimetype);
+
+        const downloadStream = bucket.openDownloadStreamByName(req.params.filename);
+        
+        downloadStream.on('error', (error) => {
+            console.error('Download Stream Error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error downloading file',
+                error: error.message
+            });
+        });
+
+        downloadStream.pipe(res);
+
+    } catch (error) {
+        console.error('Download error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving file',
+            error: error.message
+        });
+    }
+});
+
 app.listen(process.env.PORT ||4444, (err) => {
     if (err) throw err
     console.log('Example OK, app listening on port 4444!')

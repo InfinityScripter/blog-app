@@ -29,14 +29,19 @@ export const AddPost = () => {
     const handleChangeFile = async (e) => {
         try {
             const formData = new FormData();
-            const file = e.target.files[0]
-            formData.append('image', file );
-            const {data} =  await axios.post('/upload', formData);
-            setImageUrl(data.url)
-            console.log(data)
-        }
-        catch (err){
-            console.log(err)
+            const file = e.target.files[0];
+            formData.append('image', file);
+            const { data } = await axios.post('/upload', formData);
+            
+            if (data.success) {
+                setImageUrl(data.file.url);
+                console.log('Upload successful:', data);
+            } else {
+                console.error('Upload failed:', data.message);
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            alert('Ошибка при загрузке файла!');
         }
     };
 
@@ -124,9 +129,17 @@ export const AddPost = () => {
             )}
             {imageUrl && (
                 <Card className="container">
-                <img className={styles.image} src={`${process.env.REACT_APP_API_URL}${imageUrl}`} alt="Uploaded"/>
+                    <img 
+                        className={styles.image} 
+                        src={`${process.env.REACT_APP_API_URL}${imageUrl}`} 
+                        alt="Uploaded"
+                        onError={(e) => {
+                            console.error('Image load error:', e);
+                            e.target.src = 'https://via.placeholder.com/600x400?text=Image+Load+Error';
+                        }}
+                    />
                 </Card>
-                    )}
+            )}
             <br/>
 
             <TextField
