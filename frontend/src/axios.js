@@ -4,7 +4,6 @@ import Cookies from "js-cookie";
 
 const instance = axios.create({
     baseURL: process.env.REACT_APP_API_URL, // Убедитесь, что здесь правильный URL
-    withCredentials: true // Разрешаем отправку cookies
 });
 
 

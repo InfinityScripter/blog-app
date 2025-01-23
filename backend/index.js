@@ -28,30 +28,6 @@ mongoose.connect(process.env.MONGO_DB_URI)
 
 const app = express();
 
-
-const allowCors = (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Замените '*' на конкретные домены, если необходимо
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
-
-    // Если это preflight-запрос (OPTIONS), сразу завершаем его
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-
-    // Передаем выполнение следующим middleware или маршруту
-    next();
-};
-
-// Используем middleware для всех маршрутов
-app.use(allowCors);
-
-
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -69,6 +45,7 @@ const upload = multer({
 });
 
 app.use(express.json());
+app.use(cors());
 
 
 app.post('/auth/login', loginValidation, handle_errors, userController.login)
