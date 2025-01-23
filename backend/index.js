@@ -29,15 +29,28 @@ mongoose.connect(process.env.MONGO_DB_URI)
 const app = express();
 
 
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-    credentials: false
-}));
+const allowCors = (fn) => async (req, res) => {
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Можно указать конкретные домены вместо '*'
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
-app.options('*', cors());
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
 
+    return await fn(req, res);
+};
+
+const handler = (req, res) => {
+    res.end('Hello from Express with CORS!');
+};
+
+app.use(allowCors(handler));
 
 
 // Configure multer for memory storage
