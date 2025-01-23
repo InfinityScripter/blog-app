@@ -30,7 +30,7 @@ const app = express();
 
 // Настройка CORS
 const corsOptions = {
-    origin: ["https://sh0ny.online", "http://localhost:3000"], // Разрешённые домены
+    origin: ["https://sh0ny.online","https://sh0ny.ru", "http://localhost:3000", "https://blog-app-front-yl0v.onrender.com"], // Разрешённые домены
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Разрешённые методы
     allowedHeaders: [
         "X-CSRF-Token",
