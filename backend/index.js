@@ -29,28 +29,27 @@ mongoose.connect(process.env.MONGO_DB_URI)
 const app = express();
 
 
-const allowCors = (fn) => async (req, res) => {
+const allowCors = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Можно указать конкретные домены вместо '*'
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Замените '*' на конкретные домены, если необходимо
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader(
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     );
 
+    // Если это preflight-запрос (OPTIONS), сразу завершаем его
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
     }
 
-    return await fn(req, res);
+    // Передаем выполнение следующим middleware или маршруту
+    next();
 };
 
-const handler = (req, res) => {
-    res.end('Hello from Express with CORS!');
-};
-
-app.use(allowCors(handler));
+// Используем middleware для всех маршрутов
+app.use(allowCors);
 
 
 // Configure multer for memory storage
