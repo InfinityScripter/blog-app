@@ -7,9 +7,9 @@ import axios from "../../axios";
 // передаем асинхронную функцию
 export const fetchPosts = createAsyncThunk(
     'posts/fetchPosts',
-    async () => {
-        const {data} = await axios.get('/posts')
-        return data
+    async (sortBy) => {
+        const { data } = await axios.get('/posts' + (sortBy ? `?sort=${sortBy}` : ''));
+        return data;
     }
 )
 
@@ -33,7 +33,8 @@ export const fetchRemovePost = createAsyncThunk(
 const initialState = {
     posts: {
         items: [],
-        status: 'loading'
+        status: 'loading',
+        currentSort: 'date' // default sorting
     },
     tags: {
         items: [],
@@ -44,7 +45,6 @@ const initialState = {
 const postsSlice = createSlice({
     name: 'posts',
     initialState,
-    reducers: {},
 //     Нужно отловить запрос на получение постов fetchPosts (pending/fulfilled/rejected) и записать его в state
 // Описываем состояние в extraReducers нашего асинхронного thunk экшена
     extraReducers: {

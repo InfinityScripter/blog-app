@@ -2,18 +2,30 @@ import PostModel from "../models/post.js"
 
 export const getAll = async (req, res) => {
     try {
+        const { sort } = req.query;
+        let sortOptions = {};
 
-        const posts = await PostModel.find().populate({
-            path: 'user',
-            // подгружаем только поля name и avatarUrl
-            select: ['name', 'avatarUrl'],
-        }).exec();
-        res.json(posts)
+        // Handle sorting options
+        if (sort === 'date') {
+            sortOptions = { createdAt: -1 }; // -1 for descending (newest first)
+        } else if (sort === 'views') {
+            sortOptions = { viewsCount: -1 }; // -1 for descending (most viewed first)
+        }
+
+        const posts = await PostModel.find()
+            .sort(sortOptions)
+            .populate({
+                path: 'user',
+                select: ['name', 'avatarUrl'],
+            })
+            .exec();
+
+        res.json(posts);
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).json({
             message: 'Не удалось получить посты',
-        })
+        });
     }
 }
 
