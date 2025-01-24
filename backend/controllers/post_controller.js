@@ -168,3 +168,33 @@ export const getLastTags = async (req, res) => {
         })
     }
 }
+
+export const getPostsByTag = async (req, res) => {
+    try {
+        const tag = req.params.tag;
+        const { sort } = req.query;
+        let sortOptions = {};
+
+        // Handle sorting options
+        if (sort === 'date') {
+            sortOptions = { createdAt: -1 }; // -1 for descending (newest first)
+        } else if (sort === 'views') {
+            sortOptions = { viewsCount: -1 }; // -1 for descending (most viewed first)
+        }
+
+        const posts = await PostModel.find({ tags: tag })
+            .sort(sortOptions)
+            .populate({
+                path: 'user',
+                select: ['name', 'avatarUrl'],
+            })
+            .exec();
+
+        res.json(posts);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось получить посты по тегу',
+        });
+    }
+};

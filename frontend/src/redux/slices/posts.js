@@ -29,6 +29,11 @@ export const fetchRemovePost = createAsyncThunk(
     }
 )
 
+export const fetchPostsByTag = createAsyncThunk('posts/fetchPostsByTag', async ({ tag, sort = 'date' }) => {
+    const { data } = await axios.get(`/posts/tag/${tag}?sort=${sort}`);
+    return data;
+});
+
 // создаем начальное состояние слайса для постов
 const initialState = {
     posts: {
@@ -79,8 +84,20 @@ const postsSlice = createSlice({
         },
         [fetchRemovePost.rejected]: (state) => {
             state.posts.status = 'error'
-        }
-
+        },
+        // Получение постов по тегу
+        [fetchPostsByTag.pending]: (state) => {
+            state.posts.items = [];
+            state.posts.status = 'loading';
+        },
+        [fetchPostsByTag.fulfilled]: (state, action) => {
+            state.posts.items = action.payload;
+            state.posts.status = 'loaded';
+        },
+        [fetchPostsByTag.rejected]: (state) => {
+            state.posts.items = [];
+            state.posts.status = 'error';
+        },
     }
 })
 

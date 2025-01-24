@@ -4,24 +4,33 @@ import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
 import { CommentsBlock, Post, TagsBlock } from '../components';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPosts, fetchTags } from "../redux/slices/posts";
+import { fetchPosts, fetchTags, fetchPostsByTag } from "../redux/slices/posts";
 
 export const Home = () => {
     const dispatch = useDispatch();
     const userData = useSelector(state => state.auth.data);
     const { posts, tags } = useSelector(state => state.posts);
     const [activeTab, setActiveTab] = useState(0);
+    const [activeTag, setActiveTag] = useState(null);
 
     const isPostsLoading = posts.status === 'loading';
     const isTagsLoading = tags.status === 'loading';
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
+        setActiveTag(null);
+    };
+
+    const handleTagClick = (tag) => {
+        setActiveTag(tag);
+        dispatch(fetchPostsByTag(tag));
     };
 
     // Обновляем посты при смене вкладки
     useEffect(() => {
-        dispatch(fetchPosts(activeTab === 0 ? 'date' : 'views'));
+        if (!activeTag) {
+            dispatch(fetchPosts(activeTab === 0 ? 'date' : 'views'));
+        }
     }, [activeTab]);
 
     // Загружаем теги только один раз
@@ -40,6 +49,11 @@ export const Home = () => {
                 <Tab label="Новые" />
                 <Tab label="Популярные" />
             </Tabs>
+            {activeTag && (
+                <div style={{ marginBottom: 15 }}>
+                    <h2>Посты по тегу: #{activeTag}</h2>
+                </div>
+            )}
             <Grid container spacing={4}>
                 <Grid item xs={8}>
                     {(isPostsLoading ? Array.from({ length: 5 }) : posts.items).map((obj, index) =>
@@ -56,7 +70,7 @@ export const Home = () => {
                     )}
                 </Grid>
                 <Grid item xs={4}>
-                    <TagsBlock items={tags.items} isLoading={isTagsLoading} />
+                    <TagsBlock items={tags.items} isLoading={isTagsLoading} onTagClick={handleTagClick} />
                     <CommentsBlock
                         items={[
                             {

@@ -84,6 +84,7 @@ app.get("/posts", postController.getAll);
 app.get("/posts/:id", postController.getOne);
 app.delete("/posts/:id", checkAuth, postController.remove);
 app.patch("/posts/:id", checkAuth, postCreateValidation, handle_errors, postController.update);
+app.get("/posts/tag/:tag", postController.getPostsByTag);
 
 app.get("/tags", postController.getLastTags);
 

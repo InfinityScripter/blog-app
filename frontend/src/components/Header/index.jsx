@@ -3,17 +3,25 @@ import Button from '@mui/material/Button';
 
 import styles from './Header.module.scss';
 import Container from '@mui/material/Container';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {logout, selectIsAuth} from "../../redux/slices/auth";
+import {fetchPosts} from "../../redux/slices/posts";
 import Cookies from "js-cookie";
 
 export const Header = () => {
   const isAuth = useSelector(selectIsAuth);
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const onClickLogout = () => {
     dispatch(logout());
-   Cookies.remove('token');
+    Cookies.remove('token');
+  };
+
+  const onClickLogo = () => {
+    navigate('/');
+    dispatch(fetchPosts('date')); // Reset to default sort
   };
 
   console.log(isAuth, '<- isAuth');
@@ -21,9 +29,9 @@ const dispatch = useDispatch();
     <div className={styles.root}>
       <Container maxWidth="lg">
         <div className={styles.inner}>
-          <Link className={styles.logo} to="/">
+          <div className={styles.logo} onClick={onClickLogo} style={{ cursor: 'pointer' }}>
             <span>Sh</span>
-          </Link>
+          </div>
           <div className={styles.buttons}>
             {isAuth ? (
               <>

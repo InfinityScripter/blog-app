@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -11,28 +12,29 @@ import Skeleton from "@mui/material/Skeleton";
 import { SideBlock } from "./SideBlock";
 
 export const TagsBlock = ({ items, isLoading = true }) => {
+  const navigate = useNavigate();
+
+  const handleTagClick = (tag) => {
+    navigate(`/posts/tag/${tag}`);
+  };
+
   return (
     <SideBlock title="Тэги">
       <List>
         {(isLoading ? [...Array(5)] : items).map((name, i) => (
           <React.Fragment key={isLoading ? i : name}>
-            <a
-              style={{ textDecoration: "none", color: "black" }}
-              href={`/tags/${name}`}
-            >
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    <TagIcon />
-                  </ListItemIcon>
-                  {isLoading ? (
-                    <Skeleton width={100} />
-                  ) : (
-                    <ListItemText primary={name} />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            </a>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => !isLoading && handleTagClick(name)}>
+                <ListItemIcon>
+                  <TagIcon />
+                </ListItemIcon>
+                {isLoading ? (
+                  <Skeleton width={100} />
+                ) : (
+                  <ListItemText primary={name} />
+                )}
+              </ListItemButton>
+            </ListItem>
           </React.Fragment>
         ))}
       </List>

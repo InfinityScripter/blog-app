@@ -9,7 +9,7 @@ import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import styles from './Post.module.scss';
 import { UserInfo } from '../UserInfo';
 import { PostSkeleton } from './Skeleton';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {fetchRemovePost} from "../../redux/slices/posts";
 
@@ -28,6 +28,8 @@ export const Post = ({
   isEditable,
 }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   if (isLoading) {
     return <PostSkeleton />;
   }
@@ -36,6 +38,10 @@ export const Post = ({
 if (window.confirm('Are you sure you want to delete?')) {
   dispatch(fetchRemovePost(_id))
 }
+  };
+
+  const handleTagClick = (tag) => {
+    navigate(`/posts/tag/${tag}`);
   };
 
   return (
@@ -72,7 +78,12 @@ if (window.confirm('Are you sure you want to delete?')) {
           <ul className={styles.tags}>
             {tags.map((name) => (
               <li key={name}>
-                <Link to={`/tag/${name}`}>#{name}</Link>
+                <a onClick={(e) => {
+                  e.preventDefault();
+                  handleTagClick(name);
+                }} href={`/posts/tag/${name}`}>
+                  #{name}
+                </a>
               </li>
             ))}
           </ul>
