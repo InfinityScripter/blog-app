@@ -74,6 +74,9 @@ app.use(express.json());
 app.post("/auth/login", loginValidation, handle_errors, userController.login);
 app.post("/auth/register", registerValidation, handle_errors, userController.register);
 app.get("/auth/me", checkAuth, userController.getMe);
+app.post("/auth/verify-email/:token", userController.verifyEmail);
+app.post("/auth/forgot-password", userController.forgotPassword);
+app.post("/auth/reset-password/:token", userController.resetPassword);
 
 app.get("/", (req, res) => {
     res.send("Hello, I work!");

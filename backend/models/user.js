@@ -17,6 +17,38 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     avatarURL: String, // Если сразу передаем тип, то поле не обязательно
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    emailVerificationToken: {
+        type: String,
+        default: null
+    },
+    emailVerificationExpires: {
+        type: Date,
+        default: null
+    },
+    passwordResetToken: {
+        type: String,
+        default: null
+    },
+    passwordResetExpires: {
+        type: Date,
+        default: null
+    },
+    lastLogin: {
+        type: Date,
+        default: null
+    },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0
+    },
+    isLocked: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true // добавить поля createdAt и updatedAt
 })

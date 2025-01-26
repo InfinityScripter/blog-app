@@ -1,71 +1,73 @@
-import React from "react";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import {useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Cookies from 'js-cookie';
+import { Link } from "react-router-dom";
+import Alert from '@mui/material/Alert';
 
 import styles from "./Login.module.scss";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchAuth, selectIsAuth} from "../../redux/slices/auth";
-import {Navigate} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAuth, selectIsAuth } from "../../redux/slices/auth";
+import { Navigate } from "react-router-dom";
 
 export const Login = () => {
     const isAuth = useSelector(selectIsAuth);
     const dispatch = useDispatch();
-    console.log('isAuth->', isAuth);
-    // Подключаем библиотеку react-hook-form
-    // register - функция для регистрации
-    // handleSubmit - функция для обработки события submit
-    // setError - функция для установки ошибки
-    // formState - состояние формы
-    // errors - объект с ошибками
-    // isValid - флаг валидации
-    const {register, handleSubmit, setError, formState: {errors, isValid}} = useForm({
-        defaultValues: {
-            // Указываем значения по умолчанию
-            email: "111test@test.ru",
-            password: "123456",
-        },
-        mode: "onSubmit"
-    });
-    // Функция для обработки события submit будет выполняться
-    // только если валидация пройдена корректно в react-hook-form
-    const onSubmit = async (values) => {
-        //  Мы можем взять данные из action.payload что бы получить токен
-        const data = await dispatch(fetchAuth(values))
-        console.log(data)
-        if ('token' in data.payload) {
-            Cookies.set('token', data.payload.token)
-        }
-    }
+    const [error, setError] = useState('');
 
-    // Если пользователь авторизован, то редиректим его на главную страницу с помощью Navigate
+    const { register, handleSubmit, formState: { errors, isValid } } = useForm({
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+        mode: "onChange"
+    });
+
+    const onSubmit = async (values) => {
+        try {
+            setError('');
+            const data = await dispatch(fetchAuth(values));
+
+            if (!data.payload) {
+
+                setError(values.response?.data?.message);
+                return;
+            }
+
+            if ('token' in data.payload) {
+                Cookies.set('token', data.payload.token);
+            }
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || 'Произошла ошибка при входе');
+        }
+    };
+
     if (isAuth) {
-        return <Navigate to="/" />
+        return <Navigate to="/" />;
     }
 
     return (
-        <Paper classes={{root: styles.root}}>
-            <Typography classes={{root: styles.title}} variant="h5">
+        <Paper classes={{ root: styles.root }}>
+            <Typography classes={{ root: styles.title }} variant="h5">
                 Вход в аккаунт
             </Typography>
-            {/*onSubmit выполняется только если валидация прошла успешно*/}
-            {/*register - регистрируем поле в react-hook-form*/}
+            {error && (
+                <Alert severity="error" style={{ marginBottom: 20 }}>
+                    {error}
+                </Alert>
+            )}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <TextField
                     className={styles.field}
                     label="E-Mail"
                     error={Boolean(errors.email?.message)}
                     helperText={errors.email?.message}
-                    {...register("email", {
-                        required: "Укажите почту", // Поле обязательно для заполнения
-                        pattern: {
-                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Регулярное выражение для проверки email
-                            message: "Некорректный формат почты" // Сообщение об ошибке для неверного email
-                        }
-                    })}
+                    type="email"
+                    {...register('email', { required: 'Укажите почту' })}
                     fullWidth
                 />
                 <TextField
@@ -73,12 +75,28 @@ export const Login = () => {
                     label="Пароль"
                     error={Boolean(errors.password?.message)}
                     helperText={errors.password?.message}
-                    {...register("password", {required: "Укажите пароль"})}
+                    {...register('password', { required: 'Укажите пароль' })}
                     fullWidth
+                    type="password"
                 />
-                <Button type="submit" size="large" variant="contained" fullWidth>
+                <Button
+                    type="submit"
+                    size="large"
+                    variant="contained"
+                    fullWidth
+                    disabled={!isValid}
+                >
                     Войти
                 </Button>
+                <Typography
+                    variant="body2"
+                    align="center"
+                    style={{ marginTop: 20 }}
+                >
+                    <Link to="/forgot-password" style={{ color: 'inherit', textDecoration: 'underline' }}>
+                        Забыли пароль?
+                    </Link>
+                </Typography>
             </form>
         </Paper>
     );

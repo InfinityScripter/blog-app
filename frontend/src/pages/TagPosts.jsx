@@ -24,7 +24,7 @@ export const TagPosts = () => {
 
     useEffect(() => {
         dispatch(fetchPostsByTag({ tag, sort: sortBy }));
-    }, [tag]);
+    }, [tag, dispatch, sortBy]);
 
     return (
         <>

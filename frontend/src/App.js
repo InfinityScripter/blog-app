@@ -6,6 +6,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchAuthMe, selectIsAuth} from "./redux/slices/auth";
 import {useEffect} from "react";
 import {TagPosts} from "./pages/TagPosts";
+import {EmailVerification} from "./pages/EmailVerification";
+import {ForgotPassword} from "./pages/ForgotPassword";
+import {ResetPassword} from "./pages/ResetPassword";
 
 function App() {
     const dispatch = useDispatch();
@@ -27,6 +30,9 @@ function App() {
                     <Route path="/posts/:id/edit" element={<AddPost/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Registration/>}/>
+                    <Route path="/verify-email/:token" element={<EmailVerification/>}/>
+                    <Route path="/forgot-password" element={<ForgotPassword/>}/>
+                    <Route path="/reset-password/:token" element={<ResetPassword/>}/>
                 </Routes>
             </Container>
         </>
