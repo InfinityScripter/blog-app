@@ -31,7 +31,6 @@ export const register = async (req, res) => {
             emailVerificationExpires: verificationExpires
         });
 
-        const user = await doc.save();
 
         // Пытаемся отправить email, но не блокируем регистрацию в случае ошибки
         try {
@@ -47,6 +46,7 @@ export const register = async (req, res) => {
             message: 'Регистрация успешна. Проверьте вашу почту для подтверждения email адреса.',
             success: true,
         });
+        const user = await doc.save();
     } catch (err) {
         console.error(err);
         res.status(500).json({
