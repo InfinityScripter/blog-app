@@ -5,16 +5,19 @@ import Grid from '@mui/material/Grid';
 import { CommentsBlock, Post, TagsBlock } from '../components';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPosts, fetchTags, fetchPostsByTag } from "../redux/slices/posts";
+import { getLastComments } from "../redux/slices/comments";
 
 export const Home = () => {
     const dispatch = useDispatch();
     const userData = useSelector(state => state.auth.data);
     const { posts, tags } = useSelector(state => state.posts);
+    const { items: lastComments, status: commentsStatus } = useSelector(state => state.comments);
     const [activeTab, setActiveTab] = useState(0);
     const [activeTag, setActiveTag] = useState(null);
 
     const isPostsLoading = posts.status === 'loading';
     const isTagsLoading = tags.status === 'loading';
+    const isCommentsLoading = commentsStatus === 'loading';
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
@@ -33,9 +36,10 @@ export const Home = () => {
         }
     }, [activeTab]);
 
-    // Загружаем теги только один раз
+    // Загружаем теги и последние комментарии только один раз
     useEffect(() => {
         dispatch(fetchTags());
+        dispatch(getLastComments());
     }, []);
 
     return (
@@ -72,23 +76,11 @@ export const Home = () => {
                 <Grid item xs={4}>
                     <TagsBlock items={tags.items} isLoading={isTagsLoading} onTagClick={handleTagClick} />
                     <CommentsBlock
-                        items={[
-                            {
-                                user: {
-                                    fullName: 'Вася Пупкин',
-                                    avatarUrl: 'https://mui.com/static/images/avatar/1.jpg',
-                                },
-                                text: 'Это тестовый комментарий',
-                            },
-                            {
-                                user: {
-                                    fullName: 'Иван Иванов',
-                                    avatarUrl: 'https://mui.com/static/images/avatar/2.jpg',
-                                },
-                                text: 'Комментарий на три строки...',
-                            },
-                        ]}
-                        isLoading={false}
+                        items={lastComments.map(comment => ({
+                            ...comment,
+                            user: comment.author
+                        }))}
+                        isLoading={isCommentsLoading}
                     />
                 </Grid>
             </Grid>

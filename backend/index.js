@@ -5,10 +5,11 @@ import cors from "cors";
 import multer from "multer";
 import { GridFSBucket } from "mongodb";
 import { Readable } from "stream";
-import { loginValidation, postCreateValidation, registerValidation } from "./validations/validation.js";
+import { loginValidation, postCreateValidation, registerValidation, commentCreateValidation } from "./validations/validation.js";
 import checkAuth from "./utils/check_auth.js";
 import * as userController from "./controllers/user_controller.js";
 import * as postController from "./controllers/post_controller.js";
+import * as commentController from "./controllers/comment_controller.js";
 import handle_errors from "./utils/handle_errors.js";
 
 dotenv.config();
@@ -155,6 +156,13 @@ app.get("/uploads/:filename", async (req, res) => {
         res.status(500).json({ success: false, message: "Error retrieving file", error: error.message });
     }
 });
+
+// Роуты для комментариев
+app.post("/posts/:postId/comments", checkAuth, commentCreateValidation, handle_errors, commentController.create);
+app.get("/posts/:postId/comments", commentController.getPostComments);
+app.delete("/posts/:postId/comments/:commentId", checkAuth, commentController.remove);
+app.patch("/posts/:postId/comments/:commentId", checkAuth, commentCreateValidation, handle_errors, commentController.update);
+app.get("posts/comments", commentController.getLastComments);
 
 app.listen(process.env.PORT || 4444, (err) => {
     if (err) throw err;

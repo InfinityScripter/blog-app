@@ -1,0 +1,41 @@
+.root {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.userDetails {
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+.userName {
+    font-weight: 500;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.date {
+    color: #777;
+    font-size: 12px;
+}
+
+.actions {
+    margin-left: auto;
+}
+
+.text {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
