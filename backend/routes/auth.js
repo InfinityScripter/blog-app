@@ -4,6 +4,12 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
+// Определяем URL фронтенда на основе origin запроса
+const getFrontendURL = (req) => {
+    const origin = req.get('origin') || process.env.LOCAL_FRONTEND_URL;
+    return origin;
+};
+
 // Инициируем аутентификацию через Google
 router.get('/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -27,10 +33,12 @@ router.get('/google/callback',
             // Удаляем пароль из ответа
             const { passwordHash, ...userData } = req.user._doc;
 
-            res.redirect(`${process.env.FRONTEND_URL}/auth/success?token=${token}`);
+            const frontendURL = getFrontendURL(req);
+            res.redirect(`${frontendURL}/auth/success?token=${token}`);
         } catch (err) {
             console.error(err);
-            res.redirect(`${process.env.FRONTEND_URL}/auth/error`);
+            const frontendURL = getFrontendURL(req);
+            res.redirect(`${frontendURL}/auth/error`);
         }
     }
 );

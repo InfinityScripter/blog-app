@@ -31,6 +31,8 @@ mongoose.connect(process.env.MONGO_DB_URI)
 
 const app = express();
 
+app.enable('trust proxy');
+
 // Настройка CORS
 const corsOptions = {
     origin: ["https://sh0ny.online","https://sh0ny.ru", "http://localhost:3000", "https://blog-app-front-yl0v.onrender.com"], // Разрешённые домены
