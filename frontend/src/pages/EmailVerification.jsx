@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Typography, Paper, Container, CircularProgress } from '@mui/material';
 import axios from '../axios';
 import { setUserData } from '../redux/slices/auth';
+import Cookies from 'js-cookie';
 
 export const EmailVerification = () => {
     const [verificationStatus, setVerificationStatus] = useState('verifying');
@@ -20,7 +21,7 @@ export const EmailVerification = () => {
                 setMessage(data.message);
 
                 if (data.token) {
-                    window.localStorage.setItem('token', data.token);
+                    Cookies.set('token', data.token);
                     try {
                         const meResponse = await axios.get('/auth/me');
                         dispatch(setUserData(meResponse.data));

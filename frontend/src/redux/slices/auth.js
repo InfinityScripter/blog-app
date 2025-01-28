@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "../../axios";
+import Cookies from 'js-cookie';
 
 export const fetchAuth = createAsyncThunk(
     'auth/fetchAuth',
@@ -31,7 +32,8 @@ export const fetchAuthMe = createAsyncThunk(
 const initialState = {
     isAuth: false,
     data: null,
-    status: 'loading'
+    status: 'loading',
+    isAuth: Boolean(Cookies.get('token'))
 }
 
 export const authSlice = createSlice({
@@ -39,8 +41,9 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         logout: (state) => {
-            state.data = null
-            state.isAuth = false
+            state.data = null;
+            state.isAuth = false;
+            Cookies.remove('token');
         },
         setUserData: (state, action) => {
             state.data = action.payload
@@ -48,6 +51,7 @@ export const authSlice = createSlice({
         },
     },
     extraReducers: {
+        // Логин
         [fetchAuth.pending]: (state) => {
             state.status = 'loading'
             state.data = null
@@ -62,7 +66,7 @@ export const authSlice = createSlice({
             state.data = null
             state.isAuth = false
         },
-
+        // Получение данных о себе
         [fetchAuthMe.pending]: (state) => {
             state.status = 'loading'
             state.data = null
@@ -86,15 +90,15 @@ export const authSlice = createSlice({
             state.data = action.payload
         },
         [fetchRegister.rejected]: (state) => {
-            state.status = 'error'
-            state.data = null
-        }
-    }
-})
+            state.status = 'error';
+            state.data = null;
+            state.isAuth = false;
+        },
+    },
+});
 
-// Проверка на авторизацию
-export const selectIsAuth = (state) => state.auth.isAuth
+export const selectIsAuth = (state) => Boolean(state.auth.isAuth);
 
-export const authReducer = authSlice.reducer
+export const authReducer = authSlice.reducer;
 
-export const {logout, setUserData} = authSlice.actions
+export const {logout, setUserData} = authSlice.actions;

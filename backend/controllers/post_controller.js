@@ -66,13 +66,14 @@ export const remove = async (req, res) => {
     try {
         const postId = req.params.id
         // Удаляем пост по id и пользователю
-        PostModel.findOneAndDelete({ _id: postId, user: req.user })
+        PostModel.findOneAndDelete({ _id: postId, user: req.userId })
             .then(doc => {
                 if (!doc) {
                     throw Error;
                 }
-                res.json({ success: true,
-                message: 'Пост успешно удален',
+                res.json({ 
+                    success: true,
+                    message: 'Пост успешно удален',
                 });
             })
             .catch(err => res.status(404).json({ message: 'post not found', error: err }));
@@ -102,7 +103,7 @@ export const create = async (req, res) => {
             text: req.body.text,
             imageUrl: imageUrl,
             tags: Array.isArray(req.body.tags) ? req.body.tags : req.body.tags.split(','),
-            user: req.user,
+            user: req.userId,
         });
 
         // Сохраняем документ
@@ -130,7 +131,7 @@ export const update = async (req, res) => {
     try {
         const postId = req.params.id
         // Обновляем пост по id и пользователю
-        PostModel.findOneAndUpdate({ _id: postId, user: req.user }, {
+        PostModel.findOneAndUpdate({ _id: postId, user: req.userId }, {
             title: req.body.title,
             text: req.body.text,
             imageUrl: req.body.imageUrl,
@@ -140,8 +141,9 @@ export const update = async (req, res) => {
                 if (!doc) {
                     throw Error;
                 }
-                res.json({ success: true,
-                message: 'Пост успешно обновлен',
+                res.json({ 
+                    success: true,
+                    message: 'Пост успешно обновлен',
                 });
             })
             .catch(err => res.status(404).json({ message: 'post not found', error: err }));

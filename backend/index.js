@@ -11,6 +11,8 @@ import * as userController from "./controllers/user_controller.js";
 import * as postController from "./controllers/post_controller.js";
 import * as commentController from "./controllers/comment_controller.js";
 import handle_errors from "./utils/handle_errors.js";
+import passport from './config/passport.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -70,6 +72,8 @@ const upload = multer({
 });
 
 app.use(express.json());
+app.use(cors());
+app.use(passport.initialize());
 
 // Роуты
 app.post("/auth/login", loginValidation, handle_errors, userController.login);
@@ -163,6 +167,9 @@ app.get("/posts/:postId/comments", commentController.getPostComments);
 app.delete("/posts/:postId/comments/:commentId", checkAuth, commentController.remove);
 app.patch("/posts/:postId/comments/:commentId", checkAuth, commentCreateValidation, handle_errors, commentController.update);
 app.get("posts/comments", commentController.getLastComments);
+
+// Роуты для Google OAuth
+app.use('/api/auth', authRoutes);
 
 app.listen(process.env.PORT || 4444, (err) => {
     if (err) throw err;

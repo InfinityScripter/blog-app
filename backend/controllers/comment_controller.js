@@ -14,7 +14,7 @@ export const create = async (req, res) => {
         // Создаем новый комментарий
         const newComment = {
             text: req.body.text,
-            author: req.user
+            author: req.userId
         };
 
         // Добавляем комментарий в массив
@@ -79,20 +79,19 @@ export const remove = async (req, res) => {
             });
         }
 
-        // Проверяем права на удаление
-        if (comment.author.toString() !== req.user) {
+        // Проверяем, является ли пользователь автором комментария
+        if (comment.author.toString() !== req.userId) {
             return res.status(403).json({
-                message: 'Нет прав на удаление комментария'
+                message: 'Нет прав на удаление этого комментария'
             });
         }
 
-        // Удаляем комментарий используя pull
-        post.comments.pull({ _id: commentId });
+        // Удаляем комментарий
         await post.save();
 
         res.json({
             success: true,
-            message: 'Комментарий удален'
+            message: 'Комментарий успешно удален'
         });
     } catch (err) {
         console.error(err);
@@ -123,10 +122,10 @@ export const update = async (req, res) => {
             });
         }
 
-        // Проверяем права на редактирование
-        if (comment.author.toString() !== req.user) {
+        // Проверяем, является ли пользователь автором комментария
+        if (comment.author.toString() !== req.userId) {
             return res.status(403).json({
-                message: 'Нет прав на редактирование комментария'
+                message: 'Нет прав на редактирование этого комментария'
             });
         }
 
@@ -134,10 +133,10 @@ export const update = async (req, res) => {
         comment.text = req.body.text;
         await post.save();
 
-        res.json({
-            success: true,
-            message: 'Комментарий обновлен'
-        });
+        // Популируем автора для ответа
+        await post.populate('comments.author', 'name avatarURL');
+
+        res.json(comment);
     } catch (err) {
         console.error(err);
         res.status(500).json({

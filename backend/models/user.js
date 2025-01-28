@@ -14,7 +14,14 @@ const userSchema = new mongoose.Schema({
     },
     passwordHash: {
         type: String,
-        required: true,
+        required: function() {
+            return !this.googleId; // Пароль обязателен только если нет googleId
+        },
+    },
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true
     },
     avatarURL: String, // Если сразу передаем тип, то поле не обязательно
     isEmailVerified: {

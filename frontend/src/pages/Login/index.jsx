@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import Cookies from 'js-cookie';
 import { Link } from "react-router-dom";
 import Alert from '@mui/material/Alert';
+import { GoogleAuth } from "../../components/GoogleAuth";
 
 import styles from "./Login.module.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -79,13 +80,7 @@ export const Login = () => {
                     fullWidth
                     type="password"
                 />
-                <Button
-                    type="submit"
-                    size="large"
-                    variant="contained"
-                    fullWidth
-                    disabled={!isValid}
-                >
+                <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
                     Войти
                 </Button>
                 <Typography
@@ -95,7 +90,14 @@ export const Login = () => {
                 >
                     <Link to="/forgot-password" style={{ color: 'inherit', textDecoration: 'underline' }}>
                         Забыли пароль?
-                    </Link>
+                        </Link>
+                <GoogleAuth />
+                {error && <Alert severity="error" className={styles.alert}>{error}</Alert>}
+                <Link to="/register" className={styles.registerLink}>
+                    <Button variant="text" fullWidth>
+                        Создать аккаунт
+                    </Button>
+                </Link>
                 </Typography>
             </form>
         </Paper>

@@ -10,6 +10,7 @@ import { fetchRegister, selectIsAuth } from '../../redux/slices/auth';
 import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import styles from './Login.module.scss';
+import Cookies from 'js-cookie';
 
 export const Registration = () => {
     const isAuth = useSelector(selectIsAuth);
@@ -38,7 +39,7 @@ export const Registration = () => {
             }
 
             if ('token' in data.payload) {
-                window.localStorage.setItem('token', data.payload.token);
+                Cookies.set('token', data.payload.token);
             }
 
             setSuccess(data.payload.message || 'Регистрация успешна! Проверьте вашу почту для подтверждения email.');

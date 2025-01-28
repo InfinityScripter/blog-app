@@ -9,14 +9,19 @@ import {TagPosts} from "./pages/TagPosts";
 import {EmailVerification} from "./pages/EmailVerification";
 import {ForgotPassword} from "./pages/ForgotPassword";
 import {ResetPassword} from "./pages/ResetPassword";
+import {AuthSuccess} from "./pages/AuthSuccess";
+import Cookies from 'js-cookie';
 
 function App() {
     const dispatch = useDispatch();
     const isAuth = useSelector(selectIsAuth);
 
     useEffect(() => {
-        dispatch(fetchAuthMe());
-    }, []);
+        const token = Cookies.get('token');
+        if (token) {
+            dispatch(fetchAuthMe());
+        }
+    }, [dispatch]);
 
     return (
         <>
@@ -33,6 +38,7 @@ function App() {
                     <Route path="/verify-email/:token" element={<EmailVerification/>}/>
                     <Route path="/forgot-password" element={<ForgotPassword/>}/>
                     <Route path="/reset-password/:token" element={<ResetPassword/>}/>
+                    <Route path="/auth/success" element={<AuthSuccess />} />
                 </Routes>
             </Container>
         </>
