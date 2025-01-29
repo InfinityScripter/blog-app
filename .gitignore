@@ -188,3 +188,4 @@ next-env.d.ts
 
 /backend/uploads/
 
+/frontend/build/
