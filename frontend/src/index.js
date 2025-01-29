@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import CssBaseline from "@mui/material/CssBaseline";
 import {BrowserRouter} from "react-router-dom";
+import { StyledEngineProvider } from '@mui/material/styles';
 
-import "./index.scss";
 
 import {Provider} from "react-redux";
 import store from "./redux/store";
@@ -14,6 +14,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
     <>
+        <StyledEngineProvider injectFirst>
         <CssBaseline enableColorScheme/>
         <AppTheme>
             <BrowserRouter>
@@ -22,5 +23,6 @@ root.render(
                 </Provider>
             </BrowserRouter>
         </AppTheme>
+        </StyledEngineProvider>
     </>
 );

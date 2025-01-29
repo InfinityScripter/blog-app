@@ -9,6 +9,7 @@ import {logout, selectIsAuth} from "../../redux/slices/auth";
 import {fetchPosts} from "../../redux/slices/posts";
 import Cookies from "js-cookie";
 import { Avatar, Box } from "@mui/material";
+import ColorModeIconDropdown from "../../theme/ColorModeIconDropdown";
 
 export const Header = () => {
   const isAuth = useSelector(selectIsAuth);
@@ -50,6 +51,8 @@ export const Header = () => {
       <Button onClick={onClickLogout} variant="contained" color="error">
         Выйти
       </Button>
+      <ColorModeIconDropdown  />
+
     </Box>
             ) : (
               <>
