@@ -8,11 +8,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {logout, selectIsAuth} from "../../redux/slices/auth";
 import {fetchPosts} from "../../redux/slices/posts";
 import Cookies from "js-cookie";
+import { Avatar, Box } from "@mui/material";
 
 export const Header = () => {
   const isAuth = useSelector(selectIsAuth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userData = useSelector((state) => state.auth.data);
 
   const onClickLogout = () => {
     dispatch(logout());
@@ -34,14 +36,21 @@ export const Header = () => {
           </div>
           <div className={styles.buttons}>
             {isAuth ? (
-              <>
-                <Link to="/posts/create">
-                  <Button variant="contained">Написать статью</Button>
-                </Link>
-                <Button onClick={onClickLogout} variant="contained" color="error">
-                  Выйти
-                </Button>
-              </>
+      <Box display="flex" alignItems="center" gap={2}>
+      <Box display="flex" alignItems="center" gap={1}>
+        <Avatar
+          src={userData?.avatarURL || '/noavatar.png'}
+          alt={userData?.name || 'User'}
+        />
+        <span>{userData?.name}</span>
+      </Box>
+      <Link to="/posts/create" style={{ textDecoration: 'none' }}>
+        <Button variant="contained">Написать статью</Button>
+      </Link>
+      <Button onClick={onClickLogout} variant="contained" color="error">
+        Выйти
+      </Button>
+    </Box>
             ) : (
               <>
                 <Link to="/login">
