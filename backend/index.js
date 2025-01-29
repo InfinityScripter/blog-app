@@ -13,6 +13,7 @@ import * as commentController from "./controllers/comment_controller.js";
 import handle_errors from "./utils/handle_errors.js";
 import passport from './config/passport.js';
 import authRoutes from './routes/auth.js';
+import { isProduction } from './config/env.js';
 
 dotenv.config();
 
@@ -176,4 +177,5 @@ app.use('/api/auth', authRoutes);
 app.listen(process.env.PORT || 4444, (err) => {
     if (err) throw err;
     console.log("Example OK, app listening on port 4444!");
+    console.log("Приложение запущено в режиме:", isProduction ? 'production' : 'development');
 });
