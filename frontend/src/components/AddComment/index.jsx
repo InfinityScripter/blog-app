@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { createComment } from '../../redux/slices/comments';
 import { selectIsAuth } from '../../redux/slices/auth';
-import { TextField, Avatar, Button } from "@mui/material";
+import { TextField, Avatar, Button, FormControl, FormLabel } from "@mui/material";
 import styles from "./AddComment.module.scss";
 
 export const AddComment = ({ postId }) => {
@@ -37,17 +37,23 @@ export const AddComment = ({ postId }) => {
         alt={userData.name}
       />
       <div className={styles.form}>
-        <TextField
-          label="Написать комментарий"
-          variant="outlined"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          maxRows={10}
-          multiline
-          fullWidth
-          error={text.length > 1000}
-          helperText={text.length > 1000 ? 'Комментарий не может быть длиннее 1000 символов' : ''}
-        />
+        <FormControl fullWidth>
+          <FormLabel htmlFor="comment">Комментарий</FormLabel>
+          <TextField
+            id="comment"
+            name="comment"
+            placeholder="Напишите ваш комментарий..."
+            variant="outlined"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            maxRows={10}
+            multiline
+            fullWidth
+            error={text.length > 1000}
+            helperText={text.length > 1000 ? 'Комментарий не может быть длиннее 1000 символов' : ''}
+            color={text.length > 1000 ? 'error' : 'primary'}
+          />
+        </FormControl>
         <Button 
           variant="contained" 
           onClick={onSubmit}

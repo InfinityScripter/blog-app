@@ -3,6 +3,8 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import SimpleMDE from 'react-simplemde-editor';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 import 'easymde/dist/easymde.min.css';
 import styles from './AddPost.module.scss';
@@ -142,16 +144,35 @@ export const AddPost = () => {
             )}
             <br/>
 
-            <TextField
-                classes={{root: styles.title}}
-                variant="standard"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Заголовок статьи..."
-                fullWidth
-            />
-            <TextField classes={{root: styles.tags}} variant="standard" value={tags}
-                       onChange={e => setTags(e.target.value)} placeholder="Тэги" fullWidth/>
+            <FormControl fullWidth>
+                <FormLabel htmlFor="title">Заголовок</FormLabel>
+                <TextField
+                    id="title"
+                    name="title"
+                    classes={{root: styles.title}}
+                    variant="outlined"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    placeholder="Введите заголовок статьи..."
+                    fullWidth
+                    color="primary"
+                />
+            </FormControl>
+            
+            <FormControl fullWidth>
+                <FormLabel htmlFor="tags">Тэги</FormLabel>
+                <TextField 
+                    id="tags"
+                    name="tags"
+                    classes={{root: styles.tags}} 
+                    variant="outlined" 
+                    value={tags}
+                    onChange={e => setTags(e.target.value)} 
+                    placeholder="Введите тэги через запятую" 
+                    fullWidth
+                    color="primary"
+                />
+            </FormControl>
             <SimpleMDE className={styles.editor} value={value} onChange={onChange} options={options}/>
             <div className={styles.buttons}>
                 <Button onClick={onSubmit} size="large" variant="contained">

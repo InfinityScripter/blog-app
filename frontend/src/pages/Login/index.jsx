@@ -8,6 +8,8 @@ import Cookies from 'js-cookie';
 import { Link } from "react-router-dom";
 import Alert from '@mui/material/Alert';
 import { GoogleAuth } from "../../components/GoogleAuth";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 
 import styles from "./Login.module.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -62,24 +64,38 @@ export const Login = () => {
                 </Alert>
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
-                <TextField
-                    className={styles.field}
-                    label="E-Mail"
-                    error={Boolean(errors.email?.message)}
-                    helperText={errors.email?.message}
-                    type="email"
-                    {...register('email', { required: 'Укажите почту' })}
-                    fullWidth
-                />
-                <TextField
-                    className={styles.field}
-                    label="Пароль"
-                    error={Boolean(errors.password?.message)}
-                    helperText={errors.password?.message}
-                    {...register('password', { required: 'Укажите пароль' })}
-                    fullWidth
-                    type="password"
-                />
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <TextField
+                        id="email"
+                        name="email"
+                        className={styles.field}
+                        placeholder="your@email.com"
+                        error={Boolean(errors.email?.message)}
+                        helperText={errors.email?.message}
+                        type="email"
+                        {...register('email', { required: 'Укажите почту' })}
+                        fullWidth
+                        variant="outlined"
+                        color={errors.email?.message ? 'error' : 'primary'}
+                    />
+                </FormControl>
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="password">Пароль</FormLabel>
+                    <TextField
+                        id="password"
+                        name="password"
+                        className={styles.field}
+                        placeholder="••••••"
+                        error={Boolean(errors.password?.message)}
+                        helperText={errors.password?.message}
+                        {...register('password', { required: 'Укажите пароль' })}
+                        fullWidth
+                        type="password"
+                        variant="outlined"
+                        color={errors.password?.message ? 'error' : 'primary'}
+                    />
+                </FormControl>
                 <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
                     Войти
                 </Button>

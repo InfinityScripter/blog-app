@@ -11,6 +11,8 @@ import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 import Cookies from 'js-cookie';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 export const Registration = () => {
     const isAuth = useSelector(selectIsAuth);
@@ -72,44 +74,65 @@ export const Registration = () => {
                 </Alert>
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
-                <TextField
-                    className={styles.field}
-                    label="Полное имя"
-                    error={Boolean(errors.name?.message)}
-                    helperText={errors.name?.message}
-                    {...register('name', { required: 'Укажите полное имя' })}
-                    fullWidth
-                />
-                <TextField
-                    className={styles.field}
-                    label="E-Mail"
-                    type="email"
-                    error={Boolean(errors.email?.message)}
-                    helperText={errors.email?.message}
-                    {...register('email', { 
-                        required: 'Укажите почту',
-                        pattern: {
-                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                            message: 'Некорректный формат почты'
-                        }
-                    })}
-                    fullWidth
-                />
-                <TextField
-                    className={styles.field}
-                    label="Пароль"
-                    type="password"
-                    error={Boolean(errors.password?.message)}
-                    helperText={errors.password?.message}
-                    {...register('password', { 
-                        required: 'Укажите пароль',
-                        minLength: {
-                            value: 5,
-                            message: 'Пароль должен быть не менее 5 символов'
-                        }
-                    })}
-                    fullWidth
-                />
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="name">Полное имя</FormLabel>
+                    <TextField
+                        id="name"
+                        name="name"
+                        className={styles.field}
+                        placeholder="Введите ваше имя"
+                        error={Boolean(errors.name?.message)}
+                        helperText={errors.name?.message}
+                        {...register('name', { required: 'Укажите полное имя' })}
+                        fullWidth
+                        variant="outlined"
+                        color={errors.name?.message ? 'error' : 'primary'}
+                    />
+                </FormControl>
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <TextField
+                        id="email"
+                        name="email"
+                        className={styles.field}
+                        placeholder="your@email.com"
+                        type="email"
+                        error={Boolean(errors.email?.message)}
+                        helperText={errors.email?.message}
+                        {...register('email', { 
+                            required: 'Укажите почту',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: 'Некорректный формат почты'
+                            }
+                        })}
+                        fullWidth
+                        variant="outlined"
+                        color={errors.email?.message ? 'error' : 'primary'}
+                    />
+                </FormControl>
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="password">Пароль</FormLabel>
+                    <TextField
+                        id="password"
+                        name="password"
+                        className={styles.field}
+                        placeholder="••••••"
+                        type="password"
+                        error={Boolean(errors.password?.message)}
+                        helperText={errors.password?.message}
+                        {...register('password', { 
+                            required: 'Укажите пароль',
+                            minLength: {
+                                value: 6,
+                                message: 'Пароль должен быть не менее 6 символов'
+                            }
+                        })}
+                        fullWidth
+                        variant="outlined"
+                        color={errors.password?.message ? 'error' : 'primary'}
+                    />
+                </FormControl>
                 <Button 
                     type="submit" 
                     size="large" 
