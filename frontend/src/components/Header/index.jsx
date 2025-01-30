@@ -12,7 +12,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-
+import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -21,7 +21,28 @@ import { logout, selectIsAuth } from "../../redux/slices/auth";
 import { fetchPosts } from "../../redux/slices/posts";
 import ColorModeIconDropdown from "../../theme/ColorModeIconDropdown";
 
-import styles from "./Header.module.scss";
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background:
+    theme.palette.mode === "dark"
+      ? "rgba(17, 25, 40, 0.75)"
+      : "rgba(255, 255, 255, 0.8)",
+  backdropFilter: "blur(12px)",
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  boxShadow: "none",
+}));
+
+const LogoContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  textDecoration: "none",
+  color: theme.palette.text.primary,
+}));
+
+const ButtonsContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  gap: theme.spacing(1),
+  alignItems: "center",
+}));
 
 // Примерные пункты меню
 const pages = ["Главная", "Блог"];
@@ -93,33 +114,31 @@ export const Header = () => {
     navigate("/register");
   };
 
-  return (
-    <AppBar position="sticky" color="default" enableColorOnDark>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* Лого (большие экраны) */}
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            sx={{
-              display: { xs: "none", md: "flex" },
-              cursor: "pointer",
-              mr: 2,
-              fontWeight: 700,
-              letterSpacing: ".15rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-            onClick={onClickLogo}
-          >
-            Sh
-          </Typography>
+  const onClickLogout = () => {
+    if (window.confirm("Вы действительно хотите выйти?")) {
+      dispatch(logout());
+      window.localStorage.removeItem("token");
+    }
+  };
 
-          {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, ml: 1, mr: 2 }}>
-            <ColorModeIconDropdown />
-          </Box>
+  return (
+    <StyledAppBar position="sticky">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
+          <LogoContainer component={Link} to="/">
+            <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                fontWeight: 700,
+                letterSpacing: ".1rem",
+              }}
+              onClick={onClickLogo}
+            >
+              Sh
+            </Typography>
+          </LogoContainer>
 
           {/* Меню (бургер) для маленьких экранов */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -165,27 +184,8 @@ export const Header = () => {
             </Menu>
           </Box>
 
-          {/* Лого (маленькие экраны) */}
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            sx={{
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              cursor: "pointer",
-              fontWeight: 700,
-              letterSpacing: ".15rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-            onClick={onClickLogo}
-          >
-            Sh
-          </Typography>
-
-          {/* Цветовой переключатель (маленькие экраны) */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, mr: 2 }}>
+          {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, ml: 1, mr: 2 }}>
             <ColorModeIconDropdown />
           </Box>
 
@@ -195,60 +195,71 @@ export const Header = () => {
               <Button
                 key={page}
                 onClick={() => handleNavMenuClick(page)}
-                sx={{ my: 2, color: "inherit", display: "block" }}
+                sx={{ my: 2 }}
               >
                 {page}
               </Button>
             ))}
           </Box>
 
-          {/* Правая часть шапки */}
-          <Box sx={{ flexGrow: 0 }}>
+          <ButtonsContainer>
             {isAuth ? (
-              // Если авторизован — показываем аватар и меню пользователя
               <>
-                <Tooltip title="Открыть настройки">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt={userData?.name || "User"}
-                      src={userData?.avatarURL || "/noavatar.png"}
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                  keepMounted
-                  transformOrigin={{ vertical: "top", horizontal: "right" }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
+                <Button
+                  component={Link}
+                  to="/add-post"
+                  variant="contained"
+                  color="primary"
                 >
-                  {settings.map((setting) => (
-                    <MenuItem
-                      key={setting}
-                      onClick={() => handleUserSettingClick(setting)}
-                    >
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
+                  Написать статью
+                </Button>
               </>
             ) : (
-              // Если не авторизован — показываем кнопки, но только на больших экранах
-              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-                <Link to="/login" style={{ textDecoration: "none" }}>
-                  <Button variant="outlined">Войти</Button>
-                </Link>
-                <Link to="/register" style={{ textDecoration: "none" }}>
-                  <Button variant="contained">Создать аккаунт</Button>
-                </Link>
-              </Box>
+              <>
+                <Button color="inherit" component={Link} to="/login">
+                  Войти
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to="/register"
+                >
+                  Создать аккаунт
+                </Button>
+              </>
             )}
-          </Box>
+            {isAuth && (
+              <Tooltip title="Открыть настройки">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={userData?.fullName} src={userData?.avatarUrl} />
+                </IconButton>
+              </Tooltip>
+            )}
+            {isAuth && (
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                keepMounted
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() => handleUserSettingClick(setting)}
+                  >
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            )}
+          </ButtonsContainer>
         </Toolbar>
       </Container>
-    </AppBar>
+    </StyledAppBar>
   );
 };

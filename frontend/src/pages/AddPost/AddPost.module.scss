@@ -1,32 +1,7 @@
-.title {
-  input {
-    font-size: 42px;
-    font-weight: 900;
-  }
-
-  div {
-    &:before,
-    &:after {
-      display: none;
-    }
-  }
-}
-
-
-.container {
-  display: flex;
-  align-items: flex-start;
-}
-
 .image {
   margin: 15px 0;
   max-height: 200px;
   object-fit: contain;
-
-}
-
-.tags {
-  margin: 15px 0;
 }
 
 .editor {
