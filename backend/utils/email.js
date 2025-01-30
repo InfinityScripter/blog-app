@@ -14,10 +14,17 @@ const createTransporter = async () => {
     return transporter;
 };
 
+const getFrontendUrl = () => {
+    return process.env.NODE_ENV === 'production' 
+        ? process.env.PROD_FRONTEND_URL 
+        : process.env.LOCAL_FRONTEND_URL;
+};
+
 export const sendVerificationEmail = async (email, token) => {
     try {
         const transporter = await createTransporter();
-        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+        const frontendUrl = getFrontendUrl();
+        const verificationUrl = `${frontendUrl}/verify-email/${token}`;
         
         const mailOptions = {
             from: `"Blog App" <${process.env.EMAIL_USER}>`,
@@ -41,7 +48,8 @@ export const sendVerificationEmail = async (email, token) => {
 export const sendPasswordResetEmail = async (email, token) => {
     try {
         const transporter = await createTransporter();
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+        const frontendUrl = getFrontendUrl();
+        const resetUrl = `${frontendUrl}/reset-password/${token}`;
         
         const mailOptions = {
             from: `"Blog App" <${process.env.EMAIL_USER}>`,
@@ -49,7 +57,7 @@ export const sendPasswordResetEmail = async (email, token) => {
             subject: 'Восстановление пароля',
             html: `
                 <h1>Восстановление пароля</h1>
-                <p>Вы запросили восстановление пароля. Для создания нового пароля перейдите по следующей ссылке:</p>
+                <p>Для восстановления пароля, пожалуйста, перейдите по следующей ссылке:</p>
                 <a href="${resetUrl}">${resetUrl}</a>
                 <p>Ссылка действительна в течение 1 часа.</p>
                 <p>Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.</p>
