@@ -1,5 +1,4 @@
 .root {
-  background-color: #fff;
   padding: 10px 0;
   border-bottom: 1px solid #e0e0e0;
   margin-bottom: 30px;
@@ -11,8 +10,6 @@
 }
 
 .logo {
-  background-color: #4361ee;
-  color: #fff;
   font-weight: 700;
   line-height: 35px;
   text-transform: uppercase;
@@ -22,7 +19,7 @@
   text-decoration: none;
 
   &:hover {
-opacity: 0.8;
+    opacity: 0.8;
   }
 }
 

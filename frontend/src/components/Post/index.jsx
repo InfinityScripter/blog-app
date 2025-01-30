@@ -1,17 +1,24 @@
-import React from 'react';
-import clsx from 'clsx';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
-import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-
-import styles from './Post.module.scss';
-import { UserInfo } from '../UserInfo';
-import { PostSkeleton } from './Skeleton';
-import {Link, useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {fetchRemovePost} from "../../redux/slices/posts";
+import React from "react";
+import clsx from "clsx";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Clear";
+import EditIcon from "@mui/icons-material/Edit";
+import EyeIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import CommentIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Link from "@mui/material/Link";
+import { Link as RouterLink } from "react-router-dom";
+import Stack from "@mui/material/Stack";
+import styles from "./Post.module.scss";
+import { UserInfo } from "../UserInfo";
+import { PostSkeleton } from "./Skeleton";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchRemovePost } from "../../redux/slices/posts";
+import { Paper } from "@mui/material";
 
 export const Post = ({
   _id,
@@ -34,72 +41,119 @@ export const Post = ({
     return <PostSkeleton />;
   }
 
-  const onClickRemove = () => {
-if (window.confirm('Are you sure you want to delete?')) {
-  dispatch(fetchRemovePost(_id))
-}
+  const onClickRemove = (e) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete?")) {
+      dispatch(fetchRemovePost(_id));
+    }
   };
 
-  const handleTagClick = (tag) => {
+  const handleTagClick = (e, tag) => {
+    e.stopPropagation();
     navigate(`/posts/tag/${tag}`);
   };
 
+  const handlePostClick = () => {
+    if (!isFullPost) {
+      navigate(`/posts/${_id}`);
+    }
+  };
+
   return (
-    <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
+    <Paper
+      className={clsx(styles.root, { [styles.rootFull]: isFullPost })}
+      onClick={handlePostClick}
+      sx={{ cursor: isFullPost ? "default" : "pointer" }}
+    >
       {isEditable && (
-        <div className={styles.editButtons}>
-          <Link to={`/posts/${_id}/edit`}>
+        <Box
+          className={styles.editButtons}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <RouterLink to={`/posts/${_id}/edit`}>
             <IconButton color="primary">
               <EditIcon />
             </IconButton>
-          </Link>
-          <IconButton onClick={onClickRemove} color="secondary">
+          </RouterLink>
+          <IconButton onClick={onClickRemove} color="error">
             <DeleteIcon />
           </IconButton>
-        </div>
+        </Box>
       )}
       {imageUrl && (
-        <img
+        <Box
+          component="img"
           className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
           src={imageUrl}
           alt={title}
         />
       )}
-      <div className={styles.wrapper}>
-        <UserInfo
-          name={user.name}
-          user={user}
-          additionalText={createdAt}
-        />
-        <div className={styles.indention}>
-          <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
-            {isFullPost ? title : <Link to={`/posts/${_id}`}>{title}</Link>}
-          </h2>
-          <ul className={styles.tags}>
+      <Box className={styles.wrapper}>
+        <UserInfo name={user.name} user={user} additionalText={createdAt} />
+        <Box className={styles.indention}>
+          <Typography
+            variant="h5"
+            component="h2"
+            className={clsx(styles.title, { [styles.titleFull]: isFullPost })}
+            color="text.primary"
+          >
+            {title}
+          </Typography>
+          <List
+            className={styles.tags}
+            component="ul"
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              p: 0,
+              m: 0,
+            }}
+          >
             {tags.map((name) => (
-              <li key={name}>
-                <a onClick={(e) => {
-                  e.preventDefault();
-                  handleTagClick(name);
-                }} href={`/posts/tag/${name}`}>
+              <ListItem
+                key={name}
+                component="li"
+                onClick={(e) => handleTagClick(e, name)}
+                sx={{
+                  width: "auto",
+                  flexDirection: "row",
+                  p: 0,
+                  cursor: "pointer",
+                  opacity: 0.6,
+                  "&:hover": {
+                    opacity: 1,
+                  },
+                }}
+              >
+                <Typography
+                  component="span"
+                  color="primary"
+                  sx={{
+                    textDecoration: "none",
+                    "&:hover": {
+                      textDecoration: "none",
+                    },
+                  }}
+                >
                   #{name}
-                </a>
-              </li>
+                </Typography>
+              </ListItem>
             ))}
-          </ul>
-          {children && <div className={styles.content}>{children}</div>}
-          <ul className={styles.postDetails}>
-            <li>
+          </List>
+          {children && <Box className={styles.content}>{children}</Box>}
+          <Stack direction="row" spacing={2} className={styles.postDetails}>
+            <Box className={styles.postDetailsItem}>
               <EyeIcon />
-              <span>{viewsCount}</span>
-            </li>
-            <li>
+              <Typography component="span">{viewsCount}</Typography>
+            </Box>
+            <Box className={styles.postDetailsItem}>
               <CommentIcon />
-              <span>{commentsCount}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+              <Typography component="span">{commentsCount}</Typography>
+            </Box>
+          </Stack>
+        </Box>
+      </Box>
+    </Paper>
   );
 };

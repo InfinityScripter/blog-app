@@ -1,12 +1,12 @@
 $blue: #4361ee;
 
 .root {
-  background-color: #fff;
   border: 1px solid #dedede;
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 15px;
   position: relative;
+  transition: all 0.15s ease-in-out;
 
   &:hover {
     border: 1px solid $blue;
@@ -19,7 +19,6 @@ $blue: #4361ee;
 
   &Full {
     &:hover {
-      background-color: #fff;
       border: 1px solid #dedede;
       box-shadow: none;
     }
@@ -57,15 +56,8 @@ $blue: #4361ee;
 .title {
   font-size: 28px;
   margin: 0;
-
-  a {
-    text-decoration: none;
-    color: #000;
-
-    &:hover {
-      color: $blue;
-    }
-  }
+  margin-bottom: 15px;
+  user-select: none;
 
   &Full {
     font-size: 42px;
@@ -76,23 +68,11 @@ $blue: #4361ee;
 .tags {
   list-style: none;
   padding: 0;
-  margin: 5px 0 0 0;
-
-  li {
-    display: inline-block;
-    font-size: 14px;
-    margin-right: 15px;
-    opacity: 0.5;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    a {
-      text-decoration: none;
-      color: #000;
-    }
-  }
+  margin: 5px 0 15px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  user-select: none;
 }
 
 .postDetails {
@@ -100,18 +80,27 @@ $blue: #4361ee;
   padding: 0;
   margin: 20px 0 0 0;
 
-  li {
-    display: inline-flex;
+  &Item {
+    display: flex;
     align-items: center;
-    font-size: 14px;
-    margin-right: 20px;
-    opacity: 0.5;
-
+    gap: 8px;
+    user-select: none;
+    
     svg {
       font-size: 18px;
-      margin-right: 5px;
     }
   }
+}
+
+.editButtons {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+  opacity: 0;
+  transition: all 0.15s ease-in-out;
+  z-index: 1;
 }
 
 .skeleton {
@@ -145,14 +134,4 @@ $blue: #4361ee;
   span {
     margin-right: 15px;
   }
-}
-
-.editButtons {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 10px;
-  opacity: 0;
-  transition: all 0.15s ease-in-out;
 }
