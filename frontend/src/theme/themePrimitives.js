@@ -162,6 +162,7 @@ export const getDesignTokens = (mode) => {
         }),
       },
     },
+    // Настройка шрифта в проекте
     typography: {
       fontFamily: ["Kumbh Sans", "Montserrat", "Open Sans", "sans-serif"].join(
         ","
@@ -219,7 +220,7 @@ export const getDesignTokens = (mode) => {
     shadows: customShadows,
   };
 };
-
+// Настройка для светлой темы
 export const colorSchemes = {
   light: {
     palette: {
@@ -256,7 +257,8 @@ export const colorSchemes = {
       divider: alpha(gray[300], 0.4),
       background: {
         default: "hsl(0, 0%, 99%)",
-        paper: "hsl(220, 35%, 97%)",
+        // Светлая тема Paper задник
+        paper: "hsl(220, 55%, 96%)",
       },
       text: {
         primary: gray[800],
@@ -271,6 +273,7 @@ export const colorSchemes = {
         "hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px",
     },
   },
+  // Настройка для темной темы
   dark: {
     palette: {
       primary: {
@@ -306,7 +309,8 @@ export const colorSchemes = {
       divider: alpha(gray[700], 0.6),
       background: {
         default: gray[900],
-        paper: "hsl(220, 30%, 7%)",
+        // Темная тема Paper задник
+        paper: "hsl(220, 30%, 12%)",
       },
       text: {
         primary: "hsl(0, 0%, 100%)",
