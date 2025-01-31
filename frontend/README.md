@@ -1,70 +1,172 @@
-# Getting Started with Create React App
+# Проект: MERN-приложение (Блог с аутентификацией, постами и комментариями)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Данный проект сочетает в себе **Frontend (React)** и **Backend (Node.js + Express + MongoDB)**. Ниже описаны основные моменты настройки, запуска и структуры проекта.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 1. Быстрый старт
 
-### `npm start`
+### Шаг 1: Настройка окружения
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Установите Node.js (версии 16+).
+2. Установите MongoDB и запустите Mongo-сервер локально, либо подготовьте внешний MongoDB Atlas.
+3. Создайте в папке `backend` файл `.env` и пропишите в нём необходимые переменные среды (см. ниже).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Пример `.env` (упрощённый):
 
-### `npm test`
+```bash
+NODE_ENV=development
+PORT=4444
+MONGO_DB_URI=mongodb://127.0.0.1:27017/blog
+JWT_SECRET=secret123
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+EMAIL_USER=ваш_email@gmail.com
+EMAIL_PASSWORD=пароль_приложения_для_почты
 
-### `npm run build`
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-secret
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+LOCAL_FRONTEND_URL=http://localhost:3000
+PROD_FRONTEND_URL=https://ваш-домен-для-фронта
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> **Внимание**: В реальном проекте использовать безопасные способы хранения секретных ключей (Vault, переменные окружения на сервере и т.п.).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Шаг 2: Установка зависимостей
 
-### `npm run eject`
+Во фронтенде и бекенде расположены отдельные `package.json`:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **В папке `backend/`:**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  ```bash
+  cd backend
+  npm install
+  ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **В папке `frontend/`:**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  ```bash
+  cd frontend
+  npm install
+  ```
 
-## Learn More
+### Шаг 3: Запуск проекта
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Бэкенд
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+cd backend
+npm run dev
+```
 
-### Code Splitting
+По умолчанию сервер поднимется на порту http://localhost:4444
+Можно задать другой порт через .env или переменную окружения PORT.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+2. Фронтенд
 
-### Analyzing the Bundle Size
+```bash
+cd frontend
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Приложение React будет доступно по адресу http://localhost:3000.
 
-### Making a Progressive Web App
+## 2. Структура проекта
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+.
+├── backend
+│   ├── config
+│   │   ├── env.js
+│   │   └── passport.js
+│   ├── controllers
+│   │   ├── comment_controller.js
+│   │   ├── post_controller.js
+│   │   └── user_controller.js
+│   ├── models
+│   │   ├── post.js
+│   │   └── user.js
+│   ├── routes
+│   │   └── auth.js
+│   ├── utils
+│   │   ├── check_auth.js
+│   │   ├── email.js
+│   │   ├── handle_errors.js
+│   │   └── tokens.js
+│   ├── validations
+│   │   └── validation.js
+│   ├── index.js
+│   ├── package.json
+│   └── vercel.json
+└── frontend
+    ├── public
+    ├── src
+    │   ├── components
+    │   ├── pages
+    │   ├── redux
+    │   ├── theme
+    │   ├── App.js
+    │   ├── axios.js
+    │   └── index.js
+    ├── package.json
+    ├── README.md
+    └── static.json
+```
 
-### Advanced Configuration
+### Ключевые папки бэкенда
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `config/`: хранит настройки окружения (env.js) и конфигурацию OAuth (passport.js)
+- `controllers/`: контроллеры (логика обработки маршрутов) — посты, пользователи, комментарии
+- `models/`: схемы Mongoose (Post, User)
+- `routes/`: маршруты Express. Здесь есть пример auth.js для OAuth с Google
+- `utils/`: вспомогательные утилиты (проверка токена, отправка email, генерация токенов и т.д.)
+- `validations/`: с помощью express-validator валидируем входящие данные
 
-### Deployment
+### Ключевые папки фронтенда
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- `src/components/`: переиспользуемые компоненты (Header, Post, CommentBlock и т.д.)
+- `src/pages/`: страницы (Home, Login, Registration, FullPost и т.д.)
+- `src/redux/`: Redux-слайсы (posts, auth, comments) и store.js
+- `src/theme/`: тема MUI (Material UI) + кастомизации
+- `App.js`: Основное приложение, подключение роутов
+- `axios.js`: Настройка axios с baseURL и заголовками авторизации
+- `index.js`: Точка входа React (root-render)
 
-### `npm run build` fails to minify
+## 3. Дополнительные настройки
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 3.1 Подключение почты (Nodemailer)
+
+В `backend/utils/email.js` используется nodemailer для отправки писем подтверждения/сброса пароля.
+Чтобы корректно работало:
+1. Укажите EMAIL_USER и EMAIL_PASSWORD в .env
+2. Для Gmail включите пароль приложений
+
+### 3.2 Google OAuth
+
+В `backend/config/passport.js` используется passport-google-oauth20.
+Потребуется создать приложение в Google Cloud Console:
+1. Получить GOOGLE_CLIENT_ID и GOOGLE_CLIENT_SECRET
+2. Указать Callback URL (у нас /api/auth/google/callback)
+
+Фронтенд отправляет запрос на бекенд по кнопке GoogleAuth (см. GoogleAuth/index.jsx).
+
+### 3.3 JWT Токен и защита ресурсов
+
+- JWT_SECRET должен быть уникальным и безопасным. Хранить в .env
+- Вызов checkAuth на защищённых маршрутах. Например, app.post("/posts", checkAuth, ...)
+
+### 3.4 Верификация email
+
+- При регистрации генерируется токен (emailVerificationToken), отправляется на почту
+- Пользователь переходит по ссылке /verify-email/:token на фронте. Далее фронт отправляет запрос на бэкенд (/auth/verify-email/:token) для подтверждения аккаунта
+- Если не совпадает с экспирацией или токен неверный — ошибка
+
+## 4. Запуск в продакшене
+
+У меня проект хостится на https://render.com
+
+Для редиректов нужно настроить в настройках render.com:
+
+1. Редиректы для гугл авторизации и регистрации
+
+Happy coding!
