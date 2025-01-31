@@ -5,13 +5,15 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
+
 import List from "@mui/material/List";
 import Skeleton from "@mui/material/Skeleton";
+import Divider from "@mui/material/Divider";
 
 export const CommentsBlock = ({ items, children, isLoading = true }) => {
   return (
     <SideBlock title="Комментарии">
+      <Divider />
       <List>
         {(isLoading ? [...Array(5)] : items).map((obj, index) => (
           <React.Fragment key={obj?._id || index}>
@@ -22,17 +24,14 @@ export const CommentsBlock = ({ items, children, isLoading = true }) => {
                     <Skeleton variant="circular" width={40} height={40} />
                   </ListItemAvatar>
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <Skeleton variant="text" height={25} width={120} />
-                    <Skeleton variant="text" height={18} width={230} />
+                    <Skeleton variant="text" height={25} width={45} />
+                    <Skeleton variant="text" height={18} width={50} />
                   </div>
                 </ListItem>
                 <Divider variant="inset" component="li" />
               </>
             ) : (
-              <CommentBlock
-                comment={obj}
-                isEditable={obj.isEditable}
-              />
+              <CommentBlock comment={obj} isEditable={obj.isEditable} />
             )}
           </React.Fragment>
         ))}

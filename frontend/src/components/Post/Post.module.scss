@@ -1,7 +1,7 @@
 $blue: #4361ee;
 
 .root {
-  border: 1px solid #dedede;
+  border: 1px solid transparent;
   border-radius: 6px;
   overflow: hidden;
   margin-bottom: 15px;
@@ -19,7 +19,7 @@ $blue: #4361ee;
 
   &Full {
     &:hover {
-      border: 1px solid #dedede;
+      border: 1px solid transparent;
       box-shadow: none;
     }
   }
@@ -96,8 +96,6 @@ $blue: #4361ee;
   object-fit: contain;
   max-height: 50vh;
   height: 100%;
-  position: absolute;
-  left: 0;
 }
 
 .editButtons {

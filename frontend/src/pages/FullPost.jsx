@@ -53,11 +53,14 @@ export const FullPost = () => {
   const [isLoading, setLoading] = useState(true);
   const { id } = useParams();
   const userData = useSelector((state) => state.auth.data);
-  const { items: comments, status: commentsStatus } = useSelector((state) => state.comments);
+  const { items: comments, status: commentsStatus } = useSelector(
+    (state) => state.comments
+  );
 
   useEffect(() => {
     setLoading(true);
-    axios.get('/posts/' + id)
+    axios
+      .get("/posts/" + id)
       .then(({ data }) => {
         setData(data);
         setLoading(false);
@@ -80,11 +83,15 @@ export const FullPost = () => {
 
   return (
     <Container>
-      <ContentCard>
+      <>
         <Post
           _id={data._id}
           title={data.title}
-          imageUrl={data.imageUrl ? `${process.env.REACT_APP_API_URL}${data.imageUrl}` : ''}
+          imageUrl={
+            data.imageUrl
+              ? `${process.env.REACT_APP_API_URL}${data.imageUrl}`
+              : ""
+          }
           user={data.user}
           createdAt={data.createdAt}
           viewsCount={data.viewsCount}
@@ -96,21 +103,21 @@ export const FullPost = () => {
             <ReactMarkdown children={data.text} />
           </Box>
         </Post>
-      </ContentCard>
+      </>
 
-      <ContentCard>
+      <>
         <CommentsBlock
-          items={comments.map(comment => ({
+          items={comments.map((comment) => ({
             ...comment,
             post: id,
             user: comment.author,
-            isEditable: userData?._id === comment.author._id
+            isEditable: userData?._id === comment.author._id,
           }))}
-          isLoading={commentsStatus === 'loading'}
+          isLoading={commentsStatus === "loading"}
         >
           <AddComment postId={id} />
         </CommentsBlock>
-      </ContentCard>
+      </>
     </Container>
   );
 };

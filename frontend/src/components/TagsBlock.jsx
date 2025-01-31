@@ -8,6 +8,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import TagIcon from "@mui/icons-material/Tag";
 import ListItemText from "@mui/material/ListItemText";
 import Skeleton from "@mui/material/Skeleton";
+import Divider from "@mui/material/Divider";
 
 import { SideBlock } from "./SideBlock";
 
@@ -20,11 +21,14 @@ export const TagsBlock = ({ items, isLoading = true }) => {
 
   return (
     <SideBlock title="Тэги">
+      <Divider />
       <List>
         {(isLoading ? [...Array(5)] : items).map((name, i) => (
           <React.Fragment key={isLoading ? i : name}>
             <ListItem disablePadding>
-              <ListItemButton onClick={() => !isLoading && handleTagClick(name)}>
+              <ListItemButton
+                onClick={() => !isLoading && handleTagClick(name)}
+              >
                 <ListItemIcon>
                   <TagIcon />
                 </ListItemIcon>
