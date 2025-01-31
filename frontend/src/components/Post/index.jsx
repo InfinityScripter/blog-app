@@ -104,6 +104,7 @@ export const Post = ({
             component="ul"
             sx={{
               display: "flex",
+              flexDirection: "row",
               flexWrap: "wrap",
               gap: 1,
               p: 0,
