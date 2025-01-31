@@ -20,6 +20,7 @@ import Cookies from "js-cookie";
 import { logout, selectIsAuth } from "../../redux/slices/auth";
 import { fetchPosts } from "../../redux/slices/posts";
 import ColorModeIconDropdown from "../../theme/ColorModeIconDropdown";
+import { Divider } from "@mui/material";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background:
@@ -96,8 +97,7 @@ export const Header = () => {
   const handleUserSettingClick = (setting) => {
     handleCloseUserMenu();
     if (setting === "Выход") {
-      dispatch(logout());
-      Cookies.remove("token");
+      onClickLogout();
     } else {
       console.log(`Нажат пункт меню пользователя: ${setting}`);
       // Доп. логика "Профиль", "Настройки" и т.д.
@@ -229,10 +229,11 @@ export const Header = () => {
                 </Button>
               </>
             )}
+
             {isAuth && (
               <Tooltip title="Открыть настройки">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={userData?.fullName} src={userData?.avatarUrl} />
+                  <Avatar alt={userData?.fullName} src={userData?.avatarURL} />
                 </IconButton>
               </Tooltip>
             )}
@@ -247,6 +248,12 @@ export const Header = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
+                {/* Новое меню-имя пользователя */}
+                <MenuItem disabled>
+                  <Typography textAlign="center">{userData?.name}</Typography>
+                </MenuItem>
+                <Divider />
+
                 {settings.map((setting) => (
                   <MenuItem
                     key={setting}
