@@ -63,39 +63,41 @@ export const remove = async (req, res) => {
   try {
     const postId = req.params.postId;
     const commentId = req.params.commentId;
-
     const post = await Post.findById(postId);
+
     if (!post) {
       return res.status(404).json({
         message: "Пост не найден",
       });
     }
 
-    // Находим комментарий
     const comment = post.comments.id(commentId);
+
     if (!comment) {
       return res.status(404).json({
         message: "Комментарий не найден",
       });
     }
 
-    // Проверяем, является ли пользователь автором комментария
     if (comment.author.toString() !== req.userId) {
       return res.status(403).json({
         message: "Нет прав на удаление этого комментария",
       });
     }
 
-    // Удаляем комментарий
+    // Удаляем документ из массива
+    post.comments.pull(commentId);
+
+    // Сохраняем
     await post.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: "Комментарий успешно удален",
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Не удалось удалить комментарий",
     });
   }
