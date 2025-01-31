@@ -225,13 +225,7 @@ export const Registration = (props) => {
             </FormControl>
 
             {/* Кнопка "Зарегистрироваться" */}
-            <Button
-              type="submit"
-              size="large"
-              variant="contained"
-              fullWidth
-              disabled={!isValid}
-            >
+            <Button type="submit" size="large" variant="contained" fullWidth>
               Зарегистрироваться
             </Button>
           </Box>

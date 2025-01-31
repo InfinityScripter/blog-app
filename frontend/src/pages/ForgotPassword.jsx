@@ -166,13 +166,7 @@ export const ForgotPassword = (props) => {
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              size="large"
-              variant="contained"
-              fullWidth
-              disabled={!isValid}
-            >
+            <Button type="submit" size="large" variant="contained" fullWidth>
               Отправить инструкции
             </Button>
 
