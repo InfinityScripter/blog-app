@@ -16,12 +16,20 @@ import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import {
+  Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 import { logout, selectIsAuth } from "../../redux/slices/auth";
 import { fetchPosts } from "../../redux/slices/posts";
 import ColorModeIconDropdown from "../../theme/ColorModeIconDropdown";
-import { Divider } from "@mui/material";
 
+// Стили для AppBar
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background:
     theme.palette.mode === "dark"
@@ -32,6 +40,7 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
   boxShadow: "none",
 }));
 
+// Стили для логотипа
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -39,6 +48,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 
+// Стили для блока кнопок
 const ButtonsContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(1),
@@ -59,6 +69,9 @@ export const Header = () => {
   // Меню навигации (бургер) и меню пользователя
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  // Диалог выхода
+  const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
 
   // Открыть/закрыть нав-меню (бургер)
   const handleOpenNavMenu = (event) => {
@@ -90,17 +103,16 @@ export const Header = () => {
     } else if (page === "Блог") {
       navigate("/");
     }
-    // Можно дописать логику для других страниц
   };
 
   // Обработчик пунктов меню пользователя (пример)
   const handleUserSettingClick = (setting) => {
     handleCloseUserMenu();
     if (setting === "Выход") {
-      onClickLogout();
+      // Открываем диалог выхода
+      setLogoutDialogOpen(true);
     } else {
       console.log(`Нажат пункт меню пользователя: ${setting}`);
-      // Доп. логика "Профиль", "Настройки" и т.д.
     }
   };
 
@@ -114,97 +126,106 @@ export const Header = () => {
     navigate("/register");
   };
 
-  const onClickLogout = () => {
-    if (window.confirm("Вы действительно хотите выйти?")) {
-      dispatch(logout());
-      window.localStorage.removeItem("token");
-    }
+  // Действие по нажатию "Выйти"
+  const handleLogoutConfirm = () => {
+    dispatch(logout());
+    // закрываем диалог
+    setLogoutDialogOpen(false);
+  };
+  const handleLogoutCancel = () => {
+    // Просто закрываем диалог
+    setLogoutDialogOpen(false);
   };
 
   return (
-    <StyledAppBar position="sticky">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
-          <LogoContainer component={Link} to="/">
-            <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
-            <Typography
-              variant="h6"
-              noWrap
-              sx={{
-                fontWeight: 700,
-                letterSpacing: ".1rem",
-              }}
-              onClick={onClickLogo}
-            >
-              Sh
-            </Typography>
-          </LogoContainer>
-
-          {/* Меню (бургер) для маленьких экранов */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            {/* Кнопка бургера */}
-            <IconButton
-              size="large"
-              aria-label="mobile-menu"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            {/* Выпадающее меню бургера */}
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              keepMounted
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
-            >
-              {/* Ссылки на страницы */}
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={() => handleNavMenuClick(page)}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-              {/* Если не авторизован, то в бургер-меню добавляем Войти/Регистрация */}
-              {!isAuth && (
-                <>
-                  <MenuItem onClick={handleMobileLogin}>
-                    <Typography textAlign="center">Войти</Typography>
-                  </MenuItem>
-                  <MenuItem onClick={handleMobileRegister}>
-                    <Typography textAlign="center">Создать аккаунт</Typography>
-                  </MenuItem>
-                </>
-              )}
-            </Menu>
-          </Box>
-
-          {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, ml: 1, mr: 2 }}>
-            <ColorModeIconDropdown />
-          </Box>
-
-          {/* Меню для больших экранов (кнопки в шапке) */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={() => handleNavMenuClick(page)}
-                sx={{ my: 2 }}
+    <>
+      <StyledAppBar position="sticky">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
+            {/* Логотип */}
+            <LogoContainer component={Link} to="/">
+              <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 700,
+                  letterSpacing: ".1rem",
+                }}
+                onClick={onClickLogo}
               >
-                {page}
-              </Button>
-            ))}
-          </Box>
+                Sh
+              </Typography>
+            </LogoContainer>
 
-          <ButtonsContainer>
-            {isAuth ? (
-              <>
+            {/* Меню (бургер) для маленьких экранов */}
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+              {/* Кнопка бургера */}
+              <IconButton
+                size="large"
+                aria-label="mobile-menu"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+
+              {/* Выпадающее меню бургера */}
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                keepMounted
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                sx={{ display: { xs: "block", md: "none" } }}
+              >
+                {/* Ссылки на страницы */}
+                {pages.map((page) => (
+                  <MenuItem key={page} onClick={() => handleNavMenuClick(page)}>
+                    <Typography textAlign="center">{page}</Typography>
+                  </MenuItem>
+                ))}
+                {/* Если не авторизован, то в бургер-меню добавляем Войти/Регистрация */}
+                {!isAuth && (
+                  <>
+                    <MenuItem onClick={handleMobileLogin}>
+                      <Typography textAlign="center">Войти</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleMobileRegister}>
+                      <Typography textAlign="center">
+                        Создать аккаунт
+                      </Typography>
+                    </MenuItem>
+                  </>
+                )}
+              </Menu>
+            </Box>
+
+            {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
+            <Box sx={{ display: { xs: "none", md: "flex" }, ml: 1, mr: 2 }}>
+              <ColorModeIconDropdown />
+            </Box>
+
+            {/* Меню для больших экранов (кнопки в шапке) */}
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={() => handleNavMenuClick(page)}
+                  sx={{ my: 2 }}
+                >
+                  {page}
+                </Button>
+              ))}
+            </Box>
+
+            {/* Блок справа: кнопки (Написать статью / Войти / Регистрация / Аватарка) */}
+            <ButtonsContainer>
+              {isAuth ? (
                 <Button
                   component={Link}
                   to="/add-post"
@@ -213,60 +234,88 @@ export const Header = () => {
                 >
                   Написать статью
                 </Button>
-              </>
-            ) : (
-              <>
-                <Button color="inherit" component={Link} to="/login">
-                  Войти
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  to="/register"
-                >
-                  Создать аккаунт
-                </Button>
-              </>
-            )}
-
-            {isAuth && (
-              <Tooltip title="Открыть настройки">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={userData?.fullName} src={userData?.avatarURL} />
-                </IconButton>
-              </Tooltip>
-            )}
-            {isAuth && (
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                keepMounted
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {/* Новое меню-имя пользователя */}
-                <MenuItem disabled>
-                  <Typography textAlign="center">{userData?.name}</Typography>
-                </MenuItem>
-                <Divider />
-
-                {settings.map((setting) => (
-                  <MenuItem
-                    key={setting}
-                    onClick={() => handleUserSettingClick(setting)}
+              ) : (
+                <>
+                  <Button color="inherit" component={Link} to="/login">
+                    Войти
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/register"
                   >
-                    <Typography textAlign="center">{setting}</Typography>
+                    Создать аккаунт
+                  </Button>
+                </>
+              )}
+
+              {/* Иконка пользователя (аватар) + меню */}
+              {isAuth && (
+                <Tooltip title="Открыть настройки">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar
+                      alt={userData?.name || "User"}
+                      src={userData?.avatarURL}
+                    />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {isAuth && (
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  keepMounted
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {/* Новое меню: имя пользователя */}
+                  <MenuItem disabled>
+                    <Typography textAlign="center">
+                      {userData?.name || "User"}
+                    </Typography>
                   </MenuItem>
-                ))}
-              </Menu>
-            )}
-          </ButtonsContainer>
-        </Toolbar>
-      </Container>
-    </StyledAppBar>
+                  <Divider />
+
+                  {/* Остальные пункты */}
+                  {settings.map((setting) => (
+                    <MenuItem
+                      key={setting}
+                      onClick={() => handleUserSettingClick(setting)}
+                    >
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              )}
+            </ButtonsContainer>
+          </Toolbar>
+        </Container>
+      </StyledAppBar>
+
+      {/* Диалог подтверждения выхода */}
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={() => setLogoutDialogOpen(false)}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+      >
+        <DialogTitle id="logout-dialog-title">Подтверждение</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-dialog-description">
+            Вы действительно хотите выйти из аккаунта?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel}>Отмена</Button>
+          <Button onClick={handleLogoutConfirm} color="error">
+            Выйти
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
