@@ -146,7 +146,14 @@ export const Header = () => {
         <Container maxWidth="xl">
           <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
             {/* Логотип */}
-            <LogoContainer component={Link} to="/">
+            <LogoContainer
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+              }}
+              component={Link}
+              to="/"
+            >
               <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
               <Typography
                 variant="h6"
@@ -160,12 +167,11 @@ export const Header = () => {
                 Sh
               </Typography>
             </LogoContainer>
-
             {/* Меню (бургер) для маленьких экранов */}
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               {/* Кнопка бургера */}
               <IconButton
-                size="large"
+                size="small"
                 aria-label="mobile-menu"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
@@ -195,6 +201,7 @@ export const Header = () => {
                 {/* Если не авторизован, то в бургер-меню добавляем Войти/Регистрация */}
                 {!isAuth && (
                   <>
+                    <Divider />
                     <MenuItem onClick={handleMobileLogin}>
                       <Typography textAlign="center">Войти</Typography>
                     </MenuItem>
@@ -206,19 +213,42 @@ export const Header = () => {
                   </>
                 )}
               </Menu>
-            </Box>
+              {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
+              <Box sx={{ ml: 1, mr: 2 }}>
+                <ColorModeIconDropdown />
+              </Box>
 
-            {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, ml: 1, mr: 2 }}>
-              <ColorModeIconDropdown />
+              {/* Логотип */}
+              <LogoContainer
+                sx={{ display: { xs: "flex", md: "none" } }}
+                component={Link}
+                to="/"
+              >
+                <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
+                <Typography
+                  variant="h6"
+                  noWrap
+                  sx={{
+                    fontWeight: 700,
+                    letterSpacing: ".1rem",
+                  }}
+                  onClick={onClickLogo}
+                >
+                  Sh
+                </Typography>
+              </LogoContainer>
             </Box>
 
             {/* Меню для больших экранов (кнопки в шапке) */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <IconButton key={page} onClick={() => handleNavMenuClick(page)}>
+                <Button
+                  key={page}
+                  onClick={() => handleNavMenuClick(page)}
+                  sx={{ my: 2 }}
+                >
                   {page}
-                </IconButton>
+                </Button>
               ))}
             </Box>
 
@@ -231,6 +261,7 @@ export const Header = () => {
                     to="/add-post"
                     variant="contained"
                     color="primary"
+                    size="small"
                   >
                     <EditIcon />
                   </IconButton>
@@ -245,26 +276,34 @@ export const Header = () => {
                     Написать статью
                   </Button>
                 )
+              ) : isSmall ? (
+                <></>
               ) : (
                 <>
-                  <Button color="inherit" component={Link} to="/login">
-                    Войти
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    component={Link}
-                    to="/register"
-                  >
-                    Создать аккаунт
-                  </Button>
+                  <>
+                    <Button color="inherit" component={Link} to="/login">
+                      Войти
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component={Link}
+                      to="/register"
+                    >
+                      Создать аккаунт
+                    </Button>
+                  </>
                 </>
               )}
 
               {/* Иконка пользователя (аватар) + меню */}
               {isAuth && (
                 <Tooltip title="Открыть настройки">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <IconButton
+                    onClick={handleOpenUserMenu}
+                    sx={{ p: 0 }}
+                    size="small"
+                  >
                     <Avatar
                       alt={userData?.name || "User"}
                       src={userData?.avatarURL}
