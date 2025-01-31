@@ -145,7 +145,7 @@ export const Header = () => {
       <StyledAppBar position="sticky">
         <Container maxWidth="xl">
           <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
-            {/* Логотип */}
+            {/* Логотип для больших экранов */}
             <LogoContainer
               sx={{
                 mr: 2,
@@ -168,7 +168,14 @@ export const Header = () => {
               </Typography>
             </LogoContainer>
             {/* Меню (бургер) для маленьких экранов */}
-            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <Box
+              sx={{
+                display: {
+                  xs: "flex",
+                  md: "none",
+                },
+              }}
+            >
               {/* Кнопка бургера */}
               <IconButton
                 size="small"
@@ -180,6 +187,7 @@ export const Header = () => {
               >
                 <MenuIcon />
               </IconButton>
+              <ColorModeIconDropdown sx={{ ml: 1 }} />
 
               {/* Выпадающее меню бургера */}
               <Menu
@@ -214,31 +222,26 @@ export const Header = () => {
                 )}
               </Menu>
               {/* Цветовой переключатель рядом с логотипом (большие экраны) */}
-              <Box sx={{ ml: 1, mr: 2 }}>
-                <ColorModeIconDropdown />
-              </Box>
-
-              {/* Логотип */}
-              <LogoContainer
-                sx={{ display: { xs: "flex", md: "none" } }}
-                component={Link}
-                to="/"
-              >
-                <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
-                <Typography
-                  variant="h6"
-                  noWrap
-                  sx={{
-                    fontWeight: 700,
-                    letterSpacing: ".1rem",
-                  }}
-                  onClick={onClickLogo}
-                >
-                  Sh
-                </Typography>
-              </LogoContainer>
             </Box>
-
+            {/* Логотип */}
+            <LogoContainer
+              sx={{ display: { xs: "flex", md: "none" } }}
+              component={Link}
+              to="/"
+            >
+              <AdbIcon sx={{ fontSize: 32, mr: 1 }} />
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 700,
+                  letterSpacing: ".1rem",
+                }}
+                onClick={onClickLogo}
+              >
+                Sh
+              </Typography>
+            </LogoContainer>
             {/* Меню для больших экранов (кнопки в шапке) */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
