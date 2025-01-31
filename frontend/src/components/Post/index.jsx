@@ -116,8 +116,10 @@ export const Post = ({
                 component="li"
                 onClick={(e) => handleTagClick(e, name)}
                 sx={{
+                  display: "flex",
                   width: "auto",
                   flexDirection: "row",
+
                   p: 0,
                   cursor: "pointer",
                   opacity: 0.6,

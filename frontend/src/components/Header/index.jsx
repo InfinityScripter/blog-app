@@ -15,6 +15,8 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
+import { useMediaQuery } from "@mui/material";
 import Cookies from "js-cookie";
 import {
   Divider,
@@ -65,6 +67,7 @@ export const Header = () => {
   const isAuth = useSelector(selectIsAuth);
   const userData = useSelector((state) => state.auth.data);
   const navigate = useNavigate();
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   // Меню навигации (бургер) и меню пользователя
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -213,27 +216,35 @@ export const Header = () => {
             {/* Меню для больших экранов (кнопки в шапке) */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={() => handleNavMenuClick(page)}
-                  sx={{ my: 2 }}
-                >
+                <IconButton key={page} onClick={() => handleNavMenuClick(page)}>
                   {page}
-                </Button>
+                </IconButton>
               ))}
             </Box>
 
             {/* Блок справа: кнопки (Написать статью / Войти / Регистрация / Аватарка) */}
             <ButtonsContainer>
               {isAuth ? (
-                <Button
-                  component={Link}
-                  to="/add-post"
-                  variant="contained"
-                  color="primary"
-                >
-                  Написать статью
-                </Button>
+                isSmall ? (
+                  <IconButton
+                    component={Link}
+                    to="/add-post"
+                    variant="contained"
+                    color="primary"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                ) : (
+                  <Button
+                    component={Link}
+                    to="/add-post"
+                    variant="contained"
+                    color="primary"
+                  >
+                    <EditIcon sx={{ mr: 1 }} />
+                    Написать статью
+                  </Button>
+                )
               ) : (
                 <>
                   <Button color="inherit" component={Link} to="/login">

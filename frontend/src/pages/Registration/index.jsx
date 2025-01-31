@@ -247,7 +247,7 @@ export const Registration = (props) => {
               onClick={handleGoogleRegister}
               startIcon={<GoogleIcon />}
             >
-              Зарегистрироваться через Google
+              Войти через Google
             </Button>
           </Box>
 
