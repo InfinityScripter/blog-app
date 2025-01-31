@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../axios';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "../axios";
 
 // MUI компоненты
 import Box from "@mui/material/Box";
@@ -65,27 +65,27 @@ const Card = styled(MuiCard)(({ theme }) => ({
 export const EmailVerification = (props) => {
   const { token } = useParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState('loading');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [status, setStatus] = useState("loading");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const { data } = await axios.post('/auth/verify-email', { token });
-        setSuccess(data.message || 'Email успешно подтвержден');
-        setStatus('success');
-        // Редирект через 3 секунды
+        const { data } = await axios.post(`/auth/verify-email/${token}`);
+        setSuccess(data.message || "Email успешно подтвержден");
+        setStatus("success");
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 3000);
       } catch (err) {
         console.error(err);
-        setError(err.response?.data?.message || 'Ошибка при подтверждении email');
-        setStatus('error');
+        setError(
+          err.response?.data?.message || "Ошибка при подтверждении email"
+        );
+        setStatus("error");
       }
     };
-
     if (token) {
       verifyEmail();
     }
@@ -113,8 +113,15 @@ export const EmailVerification = (props) => {
             Подтверждение Email
           </Typography>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
-            {status === 'loading' && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              alignItems: "center",
+            }}
+          >
+            {status === "loading" && (
               <>
                 <CircularProgress />
                 <Typography variant="body1" sx={{ textAlign: "center" }}>
@@ -123,7 +130,7 @@ export const EmailVerification = (props) => {
               </>
             )}
 
-            {status === 'success' && (
+            {status === "success" && (
               <>
                 <Alert severity="success" sx={{ width: "100%" }}>
                   {success}
@@ -134,7 +141,7 @@ export const EmailVerification = (props) => {
               </>
             )}
 
-            {status === 'error' && (
+            {status === "error" && (
               <>
                 <Alert severity="error" sx={{ width: "100%" }}>
                   {error}

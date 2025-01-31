@@ -5,56 +5,91 @@ import jwt from "jsonwebtoken";
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/email.js';
 import { generateVerificationToken, generatePasswordResetToken, generateExpirationDate } from '../utils/tokens.js';
 
+
 export const register = async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                errors: errors.array()
-            });
-        }
-
-        // Генерируем токен верификации
-        const verificationToken = generateVerificationToken();
-        const verificationExpires = generateExpirationDate(24); // 24 часа
-
-        const password = req.body.password;
-        const hash = bcrypt.hashSync(password, 10);
-        
-        const doc = new User({
-            email: req.body.email,
-            passwordHash: hash,
-            name: req.body.name,
-            avatarURL: req.body.avatarURL,
-            emailVerificationToken: verificationToken,
-            emailVerificationExpires: verificationExpires
+      // проверяем валидацию входных данных
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array()
         });
-
-        const user = await doc.save();
-
-        // Пытаемся отправить email, но не блокируем регистрацию в случае ошибки
-        try {
-            await sendVerificationEmail(user.email, verificationToken);
-        } catch (emailError) {
-            console.error('Failed to send verification email:', emailError);
-        }
-
-        const {passwordHash, ...userData} = user._doc;
-
-        res.json({
-            ...userData,
-            message: 'Регистрация успешна. Проверьте вашу почту для подтверждения email адреса.',
+      }
+  
+      // пытаемся найти пользователя по email
+      let user = await User.findOne({ email: req.body.email });
+  
+      if (user) {
+        // если такой пользователь уже существует – проверяем статус верификации
+        if (user.isEmailVerified) {
+          // пользователь уже подтверждён – отказываемся создавать дубль
+          return res.status(409).json({
+            success: false,
+            message: "Пользователь с таким email уже зарегистрирован и подтверждён."
+          });
+        } else {
+          // пользователь НЕ подтверждён – можно "продолжить" регистрацию
+          // например, обновить ему токен и заново отправить письмо
+          const newToken = generateVerificationToken();
+          const newExpire = generateExpirationDate(24);
+  
+          user.emailVerificationToken = newToken;
+          user.emailVerificationExpires = newExpire;
+  
+          // при желании можно обновить имя и пароль, если пользователь менял данные
+          if (req.body.name) {
+            user.name = req.body.name;
+          }
+          if (req.body.password) {
+            user.passwordHash = bcrypt.hashSync(req.body.password, 10);
+          }
+  
+          await user.save();
+          // пробуем заново отправить письмо с подтверждением
+          await sendVerificationEmail(user.email, newToken);
+  
+          return res.json({
             success: true,
-        });
+            message:
+              "Регистрация обновлена. Проверьте почту для повторной верификации.",
+          });
+        }
+      }
+  
+      // если пользователя с таким email нет вообще, создаём нового
+      const verificationToken = generateVerificationToken();
+      const verificationExpires = generateExpirationDate(24);
+      const password = req.body.password;
+      const hash = bcrypt.hashSync(password, 10);
+  
+      const doc = new User({
+        email: req.body.email,
+        name: req.body.name,
+        passwordHash: hash,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: verificationExpires
+      });
+  
+      // сохраняем в БД
+      user = await doc.save();
+  
+      // отправляем письмо с подтверждением
+      await sendVerificationEmail(user.email, verificationToken);
+  
+      return res.status(201).json({
+        success: true,
+        message: "Регистрация успешно завершена! Проверьте почту для верификации."
+      });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            message: 'Ошибка при регистрации пользователя'
-        });
+      console.error(err);
+      return res.status(500).json({
+        message: "Ошибка при регистрации пользователя",
+        error: err.message
+      });
     }
-};
-
+  };
+  
 export const login = async (req, res) => {
     try {
         const user = await User.findOne({email: req.body.email});
