@@ -17,6 +17,7 @@ import { PostSkeleton } from "./Skeleton";
 import { useDispatch } from "react-redux";
 import { fetchRemovePost } from "../../redux/slices/posts";
 import { Paper, Skeleton } from "@mui/material";
+import { BlurredImage } from "./BlurredImage";
 
 export const Post = ({
   _id,
@@ -81,26 +82,7 @@ export const Post = ({
           </IconButton>
         </Box>
       )}
-      {imageUrl && (
-        <Box position="relative">
-          {/* Скелетон, который показывается до загрузки картинки */}
-          {!imgLoaded && (
-            <Skeleton
-              variant="rectangular"
-              width="100%"
-              height={isFullPost ? "50vh" : "40vh"}
-            />
-          )}
-          <Box
-            component="img"
-            src={imageUrl}
-            alt={title}
-            onLoad={() => setImgLoaded(true)}
-            className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
-            sx={{ display: imgLoaded ? "block" : "none" }}
-          />
-        </Box>
-      )}
+      {imageUrl && <BlurredImage imageUrl={imageUrl} />}
       <Box className={styles.wrapper}>
         <Box className={styles.indention}>
           <Typography
