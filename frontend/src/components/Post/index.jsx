@@ -9,16 +9,14 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import Link from "@mui/material/Link";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import styles from "./Post.module.scss";
 import { UserInfo } from "../UserInfo";
 import { PostSkeleton } from "./Skeleton";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchRemovePost } from "../../redux/slices/posts";
-import { Paper } from "@mui/material";
+import { Paper, Skeleton } from "@mui/material";
 
 export const Post = ({
   _id,
@@ -36,6 +34,9 @@ export const Post = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Локальное состояние для отслеживания загрузки картинки
+  const [imgLoaded, setImgLoaded] = React.useState(false);
 
   if (isLoading) {
     return <PostSkeleton />;
@@ -81,12 +82,24 @@ export const Post = ({
         </Box>
       )}
       {imageUrl && (
-        <Box
-          component="img"
-          className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
-          src={imageUrl}
-          alt={title}
-        />
+        <Box position="relative">
+          {/* Скелетон, который показывается до загрузки картинки */}
+          {!imgLoaded && (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={isFullPost ? "50vh" : "40vh"}
+            />
+          )}
+          <Box
+            component="img"
+            src={imageUrl}
+            alt={title}
+            onLoad={() => setImgLoaded(true)}
+            className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
+            sx={{ display: imgLoaded ? "block" : "none" }}
+          />
+        </Box>
       )}
       <Box className={styles.wrapper}>
         <Box className={styles.indention}>
@@ -119,13 +132,10 @@ export const Post = ({
                   display: "flex",
                   width: "auto",
                   flexDirection: "row",
-
                   p: 0,
                   cursor: "pointer",
                   opacity: 0.6,
-                  "&:hover": {
-                    opacity: 1,
-                  },
+                  "&:hover": { opacity: 1 },
                 }}
               >
                 <Typography
@@ -133,9 +143,7 @@ export const Post = ({
                   color="primary"
                   sx={{
                     textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "none",
-                    },
+                    "&:hover": { textDecoration: "none" },
                   }}
                 >
                   #{name}
