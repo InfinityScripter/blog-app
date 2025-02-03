@@ -61,9 +61,9 @@ export const Post = ({
 
   return (
     <Paper
-      className={clsx(styles.root, { [styles.rootFull]: isFullPost })}
+      className={clsx({ [styles.rootFull]: isFullPost })}
       onClick={handlePostClick}
-      sx={{ cursor: isFullPost ? "default" : "pointer" }}
+      sx={{ cursor: isFullPost ? "default" : "pointer", mb: 2 }}
     >
       {isEditable && (
         <Box
@@ -89,7 +89,6 @@ export const Post = ({
         />
       )}
       <Box className={styles.wrapper}>
-        <UserInfo name={user.name} user={user} additionalText={createdAt} />
         <Box className={styles.indention}>
           <Typography
             variant="h5"
@@ -145,14 +144,28 @@ export const Post = ({
             ))}
           </List>
           {children && <Box className={styles.content}>{children}</Box>}
-          <Stack direction="row" spacing={2} className={styles.postDetails}>
-            <Box className={styles.postDetailsItem}>
-              <EyeIcon />
-              <Typography component="span">{viewsCount}</Typography>
+          <Stack
+            sx={{ display: "flex", justifyContent: "space-between" }}
+            direction="row"
+            spacing={2}
+            className={styles.postDetails}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box className={styles.postDetailsItem}>
+                <EyeIcon />
+                <Typography component="span">{viewsCount}</Typography>
+              </Box>
+              <Box className={styles.postDetailsItem}>
+                <CommentIcon />
+                <Typography component="span">{commentsCount}</Typography>
+              </Box>
             </Box>
-            <Box className={styles.postDetailsItem}>
-              <CommentIcon />
-              <Typography component="span">{commentsCount}</Typography>
+            <Box>
+              <UserInfo
+                name={user.name}
+                user={user}
+                additionalText={createdAt}
+              />
             </Box>
           </Stack>
         </Box>
